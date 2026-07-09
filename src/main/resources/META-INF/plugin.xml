@@ -1,0 +1,168 @@
+<!--
+  ~ © Copyright 2026-present by Fabius Dieciscudi. Licensed under the MIT License, see LICENSE.
+  ~
+  -->
+
+<idea-plugin>
+    <id>name.fabiusdieciscudi.booklatex</id>
+    <name>Book LaTeX</name>
+    <vendor url="https://github.com/fabiusdieciscudi">Fabius Dieciscudi</vendor>
+
+    <description><![CDATA[
+        Editor support for writing books in LaTeX, built on top of TeXiFy IDEA.
+        It compiles nothing and replaces nothing: it shows a manuscript's markup
+        as what it means rather than as what it is spelled like, and leaves the
+        source itself untouched.
+
+        <ul>
+            <li>A dedicated <b>LaTeX</b> colour scheme &mdash; serif, black on
+                white, a page rather than a screen &mdash; applied to LaTeX
+                files only.</li>
+            <li><code>\comment</code> drawn as a sticky note, and
+                <code>\scene</code>, <code>\beat</code> and <code>\shot</code>
+                as coloured attribute strips, each editable through a dialog.</li>
+            <li>Dialogue drawn as <code>Speaker: &laquo;&hellip;&raquo;</code>,
+                with a speaker chooser that opens when you type
+                <code>&laquo;</code>.</li>
+            <li>Foreign-language commands drawn by their ISO code, with foreign
+                prose set in italics.</li>
+            <li><code>\sq{&hellip;}</code> drawn with curly quotes and
+                <code>\ellipsis</code> as a single <code>&hellip;</code>.</li>
+            <li>Every rendering turned on or off at once from a switch in the
+                editor's tab strip.</li>
+        </ul>
+
+        What is rendered stays live text: the caret, selection, completion and
+        the spellchecker all keep working inside it.
+
+        Requires the TeXiFy IDEA plugin, and a manuscript built on the Book
+        LaTeX preamble.
+    ]]></description>
+
+    <!--
+      ~ What each version brought, newest first. The description above says what
+      ~ the plugin is and should read the same in a year; this says what changed
+      ~ and grows by one entry a release.
+      -->
+    <change-notes><![CDATA[
+        <b>1.0</b> &mdash; first release.
+
+        <ul>
+            <li>A dedicated <b>LaTeX</b> colour scheme &mdash; serif, black on
+                white, a page rather than a screen &mdash; applied to LaTeX
+                files only.
+                (<a href="https://github.com/fabiusdieciscudi/idea-book-latex-plugin/issues/1">#1</a>)</li>
+            <li>A master switch in the editor's tab strip that turns every
+                rendering below it on or off at once.
+                (<a href="https://github.com/fabiusdieciscudi/idea-book-latex-plugin/issues/2">#2</a>)</li>
+            <li><code>\comment</code> drawn as a sticky note, and
+                <code>\scene</code>, <code>\beat</code> and <code>\shot</code>
+                as coloured attribute strips, each editable through a dialog.
+                (<a href="https://github.com/fabiusdieciscudi/idea-book-latex-plugin/issues/3">#3</a>)</li>
+            <li>Dialogue drawn as <code>Speaker: &laquo;&hellip;&raquo;</code>,
+                with a speaker chooser that opens when you type
+                <code>&laquo;</code>.
+                (<a href="https://github.com/fabiusdieciscudi/idea-book-latex-plugin/issues/4">#4</a>)</li>
+            <li>Foreign-language commands drawn by their ISO code, with foreign
+                prose set in italics.
+                (<a href="https://github.com/fabiusdieciscudi/idea-book-latex-plugin/issues/5">#5</a>)</li>
+            <li><code>\sq{&hellip;}</code> drawn with curly quotes and
+                <code>\ellipsis</code> as a single <code>&hellip;</code>.
+                (<a href="https://github.com/fabiusdieciscudi/idea-book-latex-plugin/issues/6">#6</a>)</li>
+            <li>The trailing <code>%</code> that rendered commands rely on kept
+                in place, and appended on save.
+                (<a href="https://github.com/fabiusdieciscudi/idea-book-latex-plugin/issues/7">#7</a>)</li>
+        </ul>
+    ]]></change-notes>
+
+    <resource-bundle>messages.BookLatexBundle</resource-bundle>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>nl.rubensten.texifyidea</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <highlightingPassFactory
+            implementation="name.fabiusdieciscudi.booklatex.render.CommentRenderPassFactory"/>
+
+        <highlightingPassFactory
+            implementation="name.fabiusdieciscudi.booklatex.render.AttributeStripPassFactory"/>
+
+        <highlightingPassFactory
+            implementation="name.fabiusdieciscudi.booklatex.dialogue.DialogueRenderPassFactory"/>
+
+        <highlightingPassFactory
+            implementation="name.fabiusdieciscudi.booklatex.markers.MarkerFoldPassFactory"/>
+
+        <annotator
+            language="Latex"
+            implementationClass="name.fabiusdieciscudi.booklatex.markers.ForeignProseItalicAnnotator"/>
+
+        <typedHandler
+            implementation="name.fabiusdieciscudi.booklatex.markers.EllipsisTypedHandler"/>
+
+        <typedHandler
+            implementation="name.fabiusdieciscudi.booklatex.dialogue.SpeakerPopupTypedHandler"/>
+
+        <editorFactoryListener
+            implementation="name.fabiusdieciscudi.booklatex.render.LatexEditorListener"/>
+
+        <editorFactoryListener
+            implementation="name.fabiusdieciscudi.booklatex.ui.LatexColorSchemeListener"/>
+
+        <applicationConfigurable
+            parentId="tools"
+            id="name.fabiusdieciscudi.booklatex.settings"
+            bundle="messages.BookLatexBundle"
+            key="settings.displayName"
+            instance="name.fabiusdieciscudi.booklatex.settings.BookLatexConfigurable"/>
+
+        <fileEditorProvider
+            implementation="name.fabiusdieciscudi.booklatex.editor.LatexTextEditorProvider"/>
+
+        <bundledColorScheme
+            id="LaTeX"
+            path="colorSchemes/LaTeX.xml"/>
+    </extensions>
+
+    <actions>
+        <group id="BookLaTeX.Insert"
+               class="name.fabiusdieciscudi.booklatex.insert.InsertMenuGroup"
+               popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+
+            <action id="BookLaTeX.Insert.Scene"
+                    class="name.fabiusdieciscudi.booklatex.insert.InsertSceneAction"/>
+            <action id="BookLaTeX.Insert.Beat"
+                    class="name.fabiusdieciscudi.booklatex.insert.InsertBeatAction"/>
+            <action id="BookLaTeX.Insert.Shot"
+                    class="name.fabiusdieciscudi.booklatex.insert.InsertShotAction"/>
+
+            <separator/>
+
+            <action id="BookLaTeX.Insert.Comment"
+                    class="name.fabiusdieciscudi.booklatex.insert.InsertCommentAction"/>
+
+            <separator/>
+
+            <group id="BookLaTeX.Insert.Speech"
+                   class="name.fabiusdieciscudi.booklatex.insert.InsertSpeechActionGroup"
+                   popup="true"/>
+
+            <action id="BookLaTeX.Insert.StraightQuote"
+                    class="name.fabiusdieciscudi.booklatex.insert.InsertStraightQuoteAction"/>
+        </group>
+
+        <action id="BookLaTeX.ReloadDialogueDefinitions"
+                class="name.fabiusdieciscudi.booklatex.dialogue.ReloadDialogueDefinitionsAction">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
+
+    <applicationListeners>
+        <listener class="name.fabiusdieciscudi.booklatex.settings.RenderingSettingsRefresher"
+                  topic="name.fabiusdieciscudi.booklatex.settings.RenderingSettingsListener"/>
+
+        <listener class="name.fabiusdieciscudi.booklatex.document.TrailingPercentOnSave"
+                  topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener"/>
+    </applicationListeners>
+</idea-plugin>
