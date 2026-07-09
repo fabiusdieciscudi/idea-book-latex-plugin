@@ -1,0 +1,1 @@
+# idea-book-latex-plugin
