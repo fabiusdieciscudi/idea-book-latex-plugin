@@ -9,11 +9,14 @@ import com.intellij.codeHighlighting.TextEditorHighlightingPass
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.FoldRegion
+import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.ex.FoldingModelEx
 import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import name.fabiusdieciscudi.booklatex.render.SuperscriptInlayRenderer
 import name.fabiusdieciscudi.booklatex.settings.BookLatexRenderingSettings
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
@@ -42,7 +45,13 @@ class DialogueRenderPass(
     private val editor: Editor,
 ) : TextEditorHighlightingPass(psiFile.project, editor.document) {
 
-    private data class Fold(val startOffset: Int, val endOffset: Int, val placeholder: String)
+    private data class Fold(
+        val startOffset: Int,
+        val endOffset: Int,
+        val placeholder: String,
+        /** Drawn above the line just before the placeholder, when there is one. */
+        val superscript: String? = null,
+    )
 
     private var folds: List<Fold> = emptyList()
 
@@ -70,7 +79,12 @@ class DialogueRenderPass(
         if (openingEnd >= closingStart) return emptyList()
 
         return listOf(
-            Fold(textRange.startOffset, openingEnd, "${definition.speaker}: ${definition.kind.openingQuote}"),
+            Fold(
+                textRange.startOffset,
+                openingEnd,
+                definition.kind.openingQuote,
+                superscript = definition.speaker,
+            ),
             Fold(closingStart, argument.endOffset, definition.kind.closingQuote),
         )
     }
@@ -79,6 +93,13 @@ class DialogueRenderPass(
         val foldingModel = editor.foldingModel as? FoldingModelEx ?: return
         val ours = editor.getUserData(OUR_REGIONS)
             ?: mutableListOf<FoldRegion>().also { editor.putUserData(OUR_REGIONS, it) }
+        val ourInlays = editor.getUserData(OUR_INLAYS)
+            ?: mutableListOf<Inlay<*>>().also { editor.putUserData(OUR_INLAYS, it) }
+
+        // The inlays go first: they hang off offsets the folds are about to
+        // rebuild, and one left behind outlives the speaker it was drawing.
+        ourInlays.forEach { Disposer.dispose(it) }
+        ourInlays.clear()
 
         foldingModel.runBatchFoldingOperation {
             ours.filter { it.isValid }.forEach { foldingModel.removeFoldRegion(it) }
@@ -88,7 +109,7 @@ class DialogueRenderPass(
                 val region = foldingModel.createFoldRegion(
                     fold.startOffset,
                     fold.endOffset,
-                    fold.placeholder,
+                    if (fold.superscript != null) HIDDEN else fold.placeholder,
                     null,
                     true,
                 )
@@ -100,9 +121,30 @@ class DialogueRenderPass(
                 ours += region
             }
         }
+
+        // Only once the batch has closed and the folds are collapsed. Anchored
+        // one past the fold and tied to the text that follows, so that it lands
+        // between the hidden command and the body of the line.
+        folds.forEach { fold ->
+            val speaker = fold.superscript ?: return@forEach
+            val inlay = editor.inlayModel.addInlineElement(
+                fold.endOffset,
+                false,
+                SuperscriptInlayRenderer(speaker, fold.placeholder),
+            )
+            if (inlay == null) {
+                thisLogger().warn("Refused dialogue inlay at ${fold.endOffset}")
+                return@forEach
+            }
+            ourInlays += inlay
+        }
     }
 
     private companion object {
         val OUR_REGIONS: Key<MutableList<FoldRegion>> = Key.create("booklatex.dialogue.regions")
+        val OUR_INLAYS: Key<MutableList<Inlay<*>>> = Key.create("booklatex.dialogue.inlays")
+
+        /** The placeholder of a fold an inlay draws for: empty, so nothing shows twice. */
+        const val HIDDEN = ""
     }
 }
