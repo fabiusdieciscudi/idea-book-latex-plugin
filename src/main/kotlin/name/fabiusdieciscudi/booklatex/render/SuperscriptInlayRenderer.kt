@@ -3,7 +3,7 @@
  *
  */
 
-package name.fabiusdieciscudi.booklatex.markers
+package name.fabiusdieciscudi.booklatex.render
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
@@ -26,15 +26,26 @@ import java.awt.RenderingHints
  * line cannot be a fold placeholder at all: the fold hides the command and this
  * renderer, hung off an inline inlay just after it, draws the marker instead.
  *
- * The colour is still read from [EditorColors.FOLDED_TEXT_ATTRIBUTES], so the
- * marker keeps the blue the colour scheme gives every other rendered command
- * and stays configurable from Settings | Editor | Color Scheme.
+ * A [baseline] string, when given, is drawn after the raised one and on the
+ * line, at the editor's own size. It is there for the punctuation that belongs
+ * to the prose and only happens to be rendered in the same place: a fold cannot
+ * hold half its placeholder above the line and half on it, so whatever has to
+ * straddle the two is drawn here, together.
+ *
+ * The colour is still read from [EditorColors.FOLDED_TEXT_ATTRIBUTES], so both
+ * keep the blue the colour scheme gives every other rendered command and stay
+ * configurable from Settings | Editor | Color Scheme.
  */
-class SuperscriptInlayRenderer(private val text: String) : EditorCustomElementRenderer {
+class SuperscriptInlayRenderer(
+    private val raised: String,
+    private val baseline: String = "",
+) : EditorCustomElementRenderer {
 
     override fun calcWidthInPixels(inlay: Inlay<*>): Int {
         val editor = inlay.editor
-        return editor.contentComponent.getFontMetrics(markerFont(editor)).stringWidth(text)
+        val components = editor.contentComponent
+        return components.getFontMetrics(markerFont(editor)).stringWidth(raised) +
+            components.getFontMetrics(proseFont(editor)).stringWidth(baseline)
     }
 
     override fun paint(
@@ -54,25 +65,36 @@ class SuperscriptInlayRenderer(private val text: String) : EditorCustomElementRe
             RenderingHints.VALUE_ANTIALIAS_ON,
         )
 
-        g2.font = markerFont(editor)
         g2.color = editor.colorsScheme.getAttributes(EditorColors.FOLDED_TEXT_ATTRIBUTES)?.foregroundColor
             ?: textAttributes.foregroundColor
             ?: editor.colorsScheme.defaultForeground
 
-        // The baseline of the surrounding prose, climbed by a share of its ascent.
-        // Measured on the editor's own font rather than on the marker's: the
-        // marker is smaller, and what it has to line up with is the text.
-        val proseAscent = editor.contentComponent
-            .getFontMetrics(editor.colorsScheme.getFont(EditorFontType.PLAIN))
-            .ascent
-        val baseline = targetRegion.y + proseAscent - proseAscent * RAISE
+        // The baseline of the surrounding prose, and above it the one the raised
+        // text sits on: climbed by a share of the ascent. Both are measured on
+        // the editor's own font rather than on the marker's, because what the
+        // marker has to line up with is the text.
+        val proseMetrics = editor.contentComponent.getFontMetrics(proseFont(editor))
+        val proseBaseline = (targetRegion.y + proseMetrics.ascent).toFloat()
+        val raisedBaseline = proseBaseline - proseMetrics.ascent * RAISE
 
-        g2.drawString(text, targetRegion.x.toFloat(), baseline)
+        var x = targetRegion.x.toFloat()
+
+        val raisedFont = markerFont(editor)
+        g2.font = raisedFont
+        g2.drawString(raised, x, raisedBaseline)
+        x += editor.contentComponent.getFontMetrics(raisedFont).stringWidth(raised)
+
+        if (baseline.isNotEmpty()) {
+            g2.font = proseFont(editor)
+            g2.drawString(baseline, x, proseBaseline)
+        }
     }
+
+    private fun proseFont(editor: Editor): Font = editor.colorsScheme.getFont(EditorFontType.PLAIN)
 
     /** The editor's own face, shrunk: a marker is prose, not a painted block. */
     private fun markerFont(editor: Editor): Font {
-        val prose = editor.colorsScheme.getFont(EditorFontType.PLAIN)
+        val prose = proseFont(editor)
         return prose.deriveFont(prose.size2D * SCALE)
     }
 

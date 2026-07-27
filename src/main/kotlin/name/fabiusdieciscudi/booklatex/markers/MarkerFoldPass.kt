@@ -16,6 +16,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import name.fabiusdieciscudi.booklatex.render.SuperscriptInlayRenderer
 import name.fabiusdieciscudi.booklatex.settings.BookLatexRenderingSettings
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
