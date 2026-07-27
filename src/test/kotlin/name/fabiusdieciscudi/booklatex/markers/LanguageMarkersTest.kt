@@ -20,7 +20,15 @@ class LanguageMarkersTest {
     @Test
     fun `every language yields a prose command and a name command`() {
         assertEquals(13, Languages.ALL.size)
-        assertEquals(2 * Languages.ALL.size + 1, MarkerSpecs.ALL.size) // + \ellipsis
+
+        val fromLanguages = Languages.ALL.flatMap { listOf(it.proseCommand, it.nameCommand) }
+        assertEquals(2 * Languages.ALL.size, fromLanguages.toSet().size)
+
+        // Which of the two the specs are is checked below; that all of them are
+        // there is checked here. Counting the whole list instead would make this
+        // test fail for every command added that has nothing to do with a
+        // language, which is not what it is about.
+        assertTrue(MarkerSpecs.ALL.map { it.commandName }.containsAll(fromLanguages))
     }
 
     @Test
@@ -68,6 +76,13 @@ class LanguageMarkersTest {
         assertEquals("\u2026", MarkerSpecs.ELLIPSIS.marker)
         assertTrue(!MarkerSpecs.ELLIPSIS.requiresArgument)
         assertTrue(MarkerSpecs.forCommand("\\latin")!!.requiresArgument)
+    }
+
+    @Test
+    fun `the note carries a word and needs an argument`() {
+        assertEquals("Note", MarkerSpecs.NOTE.marker)
+        assertTrue(MarkerSpecs.NOTE.requiresArgument)
+        assertEquals(MarkerSpecs.NOTE, MarkerSpecs.forCommand("\\note"))
     }
 
     @Test

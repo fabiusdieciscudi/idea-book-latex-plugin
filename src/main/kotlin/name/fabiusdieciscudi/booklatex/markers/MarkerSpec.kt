@@ -41,6 +41,13 @@ object MarkerSpecs {
     // LatexCommands.getName() keeps the leading backslash.
     val ELLIPSIS = MarkerSpec("\\ellipsis", "\u2026", requiresArgument = false)
 
+    /**
+     * An aside to the author, kept in the manuscript and marked as not being
+     * part of it. The marker is a word rather than a code because there is only
+     * one of these, and `NT` would have to be learnt.
+     */
+    val NOTE = MarkerSpec("\\note", "Note", requiresArgument = true)
+
     /** Both commands of every language, showing the same code. */
     private val LANGUAGES: List<MarkerSpec> = Languages.ALL.flatMap { language ->
         listOf(
@@ -49,7 +56,7 @@ object MarkerSpecs {
         )
     }
 
-    val ALL: List<MarkerSpec> = LANGUAGES + ELLIPSIS
+    val ALL: List<MarkerSpec> = LANGUAGES + ELLIPSIS + NOTE
 
     private val BY_NAME: Map<String, MarkerSpec> = ALL.associateBy { it.commandName }
 
