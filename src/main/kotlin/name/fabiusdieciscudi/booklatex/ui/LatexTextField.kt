@@ -61,6 +61,15 @@ fun latexTextField(
     }
 }
 
+/** Writes into whichever component [latexTextField] produced. */
+fun JComponent.setLatexText(value: String) {
+    when (this) {
+        is EditorTextField -> text = value
+        is JTextComponent -> text = value
+        is JBScrollPane -> (viewport.view as? JTextComponent)?.text = value
+    }
+}
+
 /** Reads back whichever component [latexTextField] produced. */
 fun JComponent.latexText(): String = when (this) {
     is EditorTextField -> text
