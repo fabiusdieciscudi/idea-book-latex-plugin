@@ -10,8 +10,10 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
+import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.util.Key
 import name.fabiusdieciscudi.booklatex.settings.BookLatexRenderingSettings
 
 /**
@@ -37,6 +39,9 @@ object LatexEditorColorScheme {
 
     private val SOURCE_EXTENSIONS = setOf("tex", "sty", "cls")
 
+    /** The right-margin state an editor had before the plugin first touched it. */
+    private val RIGHT_MARGIN_DEFAULT: Key<Boolean> = Key.create("booklatex.rightMargin.default")
+
     /** Editors with no file behind them -- our dialogs' LaTeX fields -- are skipped. */
     fun applyTo(editor: Editor) {
         val editorEx = editor as? EditorEx ?: return
@@ -50,6 +55,39 @@ object LatexEditorColorScheme {
         // Assigning the scheme changes the model. Without this the highlighter
         // and the view keep painting with the colours they were built with.
         editorEx.reinitSettings()
+
+        editorEx.applyRightMargin()
+    }
+
+    /**
+     * Hides the right margin when the page is set in a proportional face.
+     *
+     * The margin is drawn a column count from the left, and a column is the width
+     * of a character -- but only in a monospaced font does every character have
+     * that width. In a proportional one the line falls at a place that means
+     * nothing, so it is taken away. A monospaced font, or the user's own global
+     * scheme, keeps the margin as they have it: the state each editor started in
+     * is remembered the first time it is seen and put back when the font is fixed
+     * width again.
+     */
+    private fun EditorEx.applyRightMargin() {
+        val original = getUserData(RIGHT_MARGIN_DEFAULT)
+            ?: settings.isRightMarginShown.also { putUserData(RIGHT_MARGIN_DEFAULT, it) }
+
+        val onLatexScheme = BookLatexRenderingSettings.getInstance().latexColorScheme
+        settings.isRightMarginShown = if (onLatexScheme && !isMonospaced()) false else original
+    }
+
+    /**
+     * Whether the editor's face is fixed width.
+     *
+     * No flag says so, so it is measured: a narrow glyph as wide as a broad one
+     * is what fixed width means. The face is read from the scheme in force, which
+     * by this point is the plugin's own with the chosen family and size.
+     */
+    private fun EditorEx.isMonospaced(): Boolean {
+        val metrics = contentComponent.getFontMetrics(colorsScheme.getFont(EditorFontType.PLAIN))
+        return metrics.charWidth('i') == metrics.charWidth('W')
     }
 
     /** Called when a preference changes: the open editors have to catch up. */
