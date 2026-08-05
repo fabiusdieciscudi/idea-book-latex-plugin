@@ -85,6 +85,9 @@
             implementation="name.fabiusdieciscudi.booklatex.render.CommentRenderPassFactory"/>
 
         <highlightingPassFactory
+            implementation="name.fabiusdieciscudi.booklatex.render.CommentRulePassFactory"/>
+
+        <highlightingPassFactory
             implementation="name.fabiusdieciscudi.booklatex.render.AttributeStripPassFactory"/>
 
         <highlightingPassFactory
