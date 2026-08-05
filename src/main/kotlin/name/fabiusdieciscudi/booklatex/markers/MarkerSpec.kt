@@ -36,6 +36,34 @@ data class WrapSpec(
     val closing: String,
 )
 
+/**
+ * A list environment drawn by name rather than by its `\begin` and `\end`.
+ *
+ * `\begin{itemize}` reads as a raised `ITEMIZE`, `\end{itemize}` as a raised
+ * `END ITEMIZE`, and every `\item` the environment holds as a bullet. The whole
+ * `\begin{...}` and `\end{...}` fold away behind the raised marker, the way a
+ * language command folds behind its code — the marker already names the
+ * environment, so keeping the `{itemize}` beside it would only say it twice.
+ *
+ * The bullet stands on the baseline, where the ellipsis stands, rather than
+ * being raised: a bullet is punctuation the list is read with, not a label on
+ * it. An `\item` is only ever a bullet inside a list this knows; anywhere else
+ * it is left as source, because the bullet the platform draws is the list's, and
+ * a lone `\item` has no list to belong to.
+ *
+ * Only `itemize` for now. A second list environment is one row of [ListEnvironments].
+ */
+data class ListEnvironmentSpec(
+    /** The environment name, as it appears between the braces of `\begin{...}`. */
+    val environmentName: String,
+    /** Raised in place of the whole `\begin{...}`. */
+    val beginMarker: String,
+    /** Raised in place of the whole `\end{...}`. */
+    val endMarker: String,
+    /** Drawn on the baseline in place of each `\item` the environment holds. */
+    val itemMarker: String,
+)
+
 object MarkerSpecs {
 
     // LatexCommands.getName() keeps the leading backslash.
@@ -71,4 +99,26 @@ object WrapSpecs {
 
     fun forCommand(commandName: String?): WrapSpec? =
         ALL.firstOrNull { it.commandName == commandName }
+}
+
+object ListEnvironments {
+
+    val ITEMIZE = ListEnvironmentSpec(
+        environmentName = "itemize",
+        beginMarker = "ITEMIZE",
+        endMarker = "END ITEMIZE",
+        itemMarker = "\u2022",
+    )
+
+    val ALL: List<ListEnvironmentSpec> = listOf(ITEMIZE)
+
+    /**
+     * The name of the command that carries the items, kept with its backslash to
+     * match what LatexCommands.getName() returns.
+     */
+    const val ITEM_COMMAND = "\\item"
+
+    /** The spec for an environment of this name, or null if none is drawn this way. */
+    fun forEnvironment(environmentName: String?): ListEnvironmentSpec? =
+        ALL.firstOrNull { it.environmentName == environmentName }
 }
