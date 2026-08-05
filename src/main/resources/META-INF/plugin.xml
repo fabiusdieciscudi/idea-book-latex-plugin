@@ -108,6 +108,10 @@
             language="Latex"
             implementationClass="name.fabiusdieciscudi.booklatex.markers.StyledProseAnnotator"/>
 
+        <annotator
+            language="Latex"
+            implementationClass="name.fabiusdieciscudi.booklatex.markers.SuppressedProseAnnotator"/>
+
         <typedHandler
             implementation="name.fabiusdieciscudi.booklatex.markers.EllipsisTypedHandler"/>
 
@@ -161,6 +165,17 @@
 
             <action id="BookLaTeX.Insert.StraightQuote"
                     class="name.fabiusdieciscudi.booklatex.insert.InsertStraightQuoteAction"/>
+        </group>
+
+        <group id="BookLaTeX.MarkAs"
+               class="name.fabiusdieciscudi.booklatex.mark.MarkAsMenuGroup"
+               popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="BookLaTeX.Insert"/>
+
+            <action id="BookLaTeX.MarkAs.Suppressed"
+                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsSuppressedAction"/>
+            <action id="BookLaTeX.MarkAs.Alternate"
+                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsAlternateAction"/>
         </group>
 
         <action id="BookLaTeX.ReloadDialogueDefinitions"

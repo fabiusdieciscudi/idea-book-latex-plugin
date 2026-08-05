@@ -97,6 +97,15 @@ object MarkerSpecs {
      */
     val NOTE = MarkerSpec("\\note", "Note", requiresArgument = true)
 
+    /**
+     * Prose the author has cut, and another version of a passage: the book
+     * prints neither. Each is labelled with a word, raised like a language
+     * code, because the two look alike otherwise -- [SuppressedProseAnnotator]
+     * greys and strikes both -- and the word is what tells them apart.
+     */
+    val SUPPRESSED = MarkerSpec(SUPPRESSED_COMMAND_NAME, "Suppressed", requiresArgument = true)
+    val ALTERNATE = MarkerSpec(ALTERNATE_COMMAND_NAME, "Alternate", requiresArgument = true)
+
     /** Both commands of every language, showing the same code. */
     private val LANGUAGES: List<MarkerSpec> = Languages.ALL.flatMap { language ->
         listOf(
@@ -105,7 +114,7 @@ object MarkerSpecs {
         )
     }
 
-    val ALL: List<MarkerSpec> = LANGUAGES + ELLIPSIS + NOTE
+    val ALL: List<MarkerSpec> = LANGUAGES + ELLIPSIS + NOTE + SUPPRESSED + ALTERNATE
 
     private val BY_NAME: Map<String, MarkerSpec> = ALL.associateBy { it.commandName }
 

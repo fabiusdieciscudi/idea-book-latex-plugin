@@ -108,8 +108,9 @@ class MarkerFoldPass(
         val end = commandToken.textRange.endOffset
         if (end <= start) return emptyList()
 
-        // The specs that take an argument are the language ones, and those are
-        // the ones that go up. \ellipsis stands on the baseline where it is.
+        // A marker that takes an argument labels it -- a language code, a note,
+        // a cut, an alternative -- and goes up. \ellipsis stands on the baseline
+        // where it is.
         return listOf(Fold(start, end, spec.marker, raise = if (spec.requiresArgument) Raise.ABOVE else null))
     }
 

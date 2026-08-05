@@ -28,6 +28,7 @@ class BookLatexBundleTest {
         "command.editComment",
         "command.editAttributes",
         "command.insertSpeaker",
+        "command.markAs",
         "popup.speaker.title",
         "popup.speaker.item",
         "popup.speaker.literal",
@@ -36,6 +37,9 @@ class BookLatexBundleTest {
         "action.smartRendering.description",
         "action.BookLaTeX.ReloadDialogueDefinitions.text",
         "action.BookLaTeX.ReloadDialogueDefinitions.description",
+        "group.BookLaTeX.MarkAs.text",
+        "action.BookLaTeX.MarkAs.Suppressed.text",
+        "action.BookLaTeX.MarkAs.Alternate.text",
     )
 
     @Test
@@ -46,7 +50,7 @@ class BookLatexBundleTest {
 
     @Test
     fun `the keys that take arguments have placeholders`() {
-        listOf("dialog.attributes.title", "command.editAttributes", "command.insertSpeaker")
+        listOf("dialog.attributes.title", "command.editAttributes", "command.insertSpeaker", "command.markAs")
             .forEach { assertTrue(it, bundle.getString(it).contains("{0}")) }
         assertTrue(bundle.getString("popup.speaker.item").contains("{1}"))
     }

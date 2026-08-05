@@ -224,11 +224,35 @@ single ellipsis character. Pasted text is left alone, and so is anything after a
 
 ---
 
+## Cuts and alternatives
+
+Prose kept in the manuscript but not printed in the book:
+
+```latex
+\suppressed{Era una notte buia e tempestosa.}   →  Suppressed{Era una notte buia e tempestosa.}
+\alternate{Pioveva.}                            →  Alternate{Pioveva.}
+```
+
+The command is replaced by a raised word, like a language code; the text between
+the braces is set in light grey and struck through, and stays editable. The two
+look the same apart from the word, because the book prints neither.
+
+**Select some text**, right-click, and choose *Mark As | Suppressed* or *Mark As
+| Alternate* to wrap it in the command. Whitespace at either end of the
+selection, and a `%` comment on its last line, are left outside the braces. A
+selection that would break the document — one that starts inside a comment,
+cuts a command name in two, holds an unmatched brace, or separates a command
+from its arguments — leaves the two entries disabled. With several carets,
+every selection is wrapped at once, and a single undo takes them all back.
+
+---
+
 ## Saving
 
 When you save a LaTeX file, the plugin appends the `%` that swallows the newline
-to every `\comment`, `\scene`, `\beat` and `\shot` that owns its lines and does
-not already end in one. Trailing spaces before it are removed.
+to every `\comment`, `\scene`, `\beat`, `\shot`, `\suppressed` and `\alternate`
+that owns its lines and does not already end in one. Trailing spaces before it
+are removed.
 
 A command with real text after it on the same line is never touched, and neither
 is a line that already ends in a comment.

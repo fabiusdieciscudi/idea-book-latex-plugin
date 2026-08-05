@@ -86,6 +86,14 @@ class LanguageMarkersTest {
     }
 
     @Test
+    fun `a cut and an alternative carry a word and need an argument`() {
+        assertEquals("Suppressed", MarkerSpecs.forCommand("\\suppressed")?.marker)
+        assertEquals("Alternate", MarkerSpecs.forCommand("\\alternate")?.marker)
+        assertTrue(MarkerSpecs.SUPPRESSED.requiresArgument)
+        assertTrue(MarkerSpecs.ALTERNATE.requiresArgument)
+    }
+
+    @Test
     fun `an unknown command has no spec`() {
         assertNull(MarkerSpecs.forCommand("\\klingon"))
         assertNull(MarkerSpecs.forCommand(null))

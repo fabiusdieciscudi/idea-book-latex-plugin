@@ -12,13 +12,14 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import name.fabiusdieciscudi.booklatex.attributes.StripSpecs
 import name.fabiusdieciscudi.booklatex.comment.COMMENT_COMMAND_NAME
+import name.fabiusdieciscudi.booklatex.markers.SUPPRESSED_COMMAND_NAMES
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 const val PERCENT = "%"
 
 /** Every command this plugin renders, and therefore expects a `%` to follow. */
 val RENDERED_COMMAND_NAMES: Set<String> =
-    StripSpecs.ALL.map { it.commandName }.toSet() + COMMENT_COMMAND_NAME
+    StripSpecs.ALL.map { it.commandName }.toSet() + COMMENT_COMMAND_NAME + SUPPRESSED_COMMAND_NAMES
 
 /**
  * Guarantees the `%` that swallows the newline after a rendered command.
