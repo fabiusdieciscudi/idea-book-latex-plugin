@@ -175,5 +175,8 @@
 
         <listener class="name.fabiusdieciscudi.booklatex.document.TrailingPercentOnSave"
                   topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener"/>
+
+        <listener class="name.fabiusdieciscudi.booklatex.document.ApostropheOnSave"
+                  topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener"/>
     </applicationListeners>
 </idea-plugin>

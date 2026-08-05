@@ -27,6 +27,7 @@ class BookLatexConfigurable : Configurable {
     private val editorFontFamily = ComboBox<String>()
     private val editorFontSize = JBIntSpinner(LatexEditorColorScheme.DEFAULT_FONT_SIZE, MIN_FONT_SIZE, MAX_FONT_SIZE)
     private val fontFamily = ComboBox<String>()
+    private val apostrophes = JBCheckBox(BookLatexBundle.message("settings.apostrophes.label"))
 
     private val settings get() = BookLatexRenderingSettings.getInstance()
 
@@ -47,6 +48,8 @@ class BookLatexConfigurable : Configurable {
             .addLabeledComponent(BookLatexBundle.message("settings.editorFontSize.label"), editorFontSize)
             .addSeparator()
             .addLabeledComponent(BookLatexBundle.message("settings.renderFont.label"), fontFamily)
+            .addSeparator()
+            .addComponent(apostrophes)
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -56,7 +59,8 @@ class BookLatexConfigurable : Configurable {
             schemeName.selectedItem != settings.latexColorSchemeName ||
             editorFontFamily.selectedItem != settings.editorFontFamily ||
             editorFontSize.number != settings.editorFontSize ||
-            fontFamily.selectedItem != settings.renderFontFamily
+            fontFamily.selectedItem != settings.renderFontFamily ||
+            apostrophes.isSelected != settings.normalizeApostrophes
 
     override fun apply() {
         settings.latexColorScheme = enabled.isSelected
@@ -64,6 +68,7 @@ class BookLatexConfigurable : Configurable {
         (editorFontFamily.selectedItem as? String)?.let { settings.editorFontFamily = it }
         settings.editorFontSize = editorFontSize.number
         (fontFamily.selectedItem as? String)?.let { settings.renderFontFamily = it }
+        settings.normalizeApostrophes = apostrophes.isSelected
 
         LatexEditorColorScheme.applyToOpenEditors()
         // The blocks are painted, and their width was measured with the old
@@ -79,6 +84,7 @@ class BookLatexConfigurable : Configurable {
         fill(editorFontFamily, RenderFonts.availableFamilies(), settings.editorFontFamily)
         fill(fontFamily, RenderFonts.availableFamilies(), settings.renderFontFamily)
         editorFontSize.value = settings.editorFontSize
+        apostrophes.isSelected = settings.normalizeApostrophes
 
         enabled.isSelected = settings.latexColorScheme
         schemeName.isEnabled = enabled.isSelected

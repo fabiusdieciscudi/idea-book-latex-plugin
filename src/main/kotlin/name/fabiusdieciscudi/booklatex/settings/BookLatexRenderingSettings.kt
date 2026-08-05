@@ -31,6 +31,7 @@ class BookLatexRenderingSettings :
         var editorFontFamily: String? by string(LatexEditorColorScheme.DEFAULT_FONT_FAMILY)
         var editorFontSize: Int by property(LatexEditorColorScheme.DEFAULT_FONT_SIZE)
         var renderFontFamily: String? by string(RenderFonts.DEFAULT_FAMILY)
+        var normalizeApostrophes: Boolean by property(true)
     }
 
     var smartRendering: Boolean
@@ -83,6 +84,17 @@ class BookLatexRenderingSettings :
         get() = state.renderFontFamily ?: RenderFonts.DEFAULT_FAMILY
         set(value) {
             state.renderFontFamily = value
+        }
+
+    /**
+     * Whether saving rewrites the alternative apostrophes to a plain `'`. Not
+     * broadcast on the topic: it changes nothing on screen, only what the next
+     * save does.
+     */
+    var normalizeApostrophes: Boolean
+        get() = state.normalizeApostrophes
+        set(value) {
+            state.normalizeApostrophes = value
         }
 
     companion object {
