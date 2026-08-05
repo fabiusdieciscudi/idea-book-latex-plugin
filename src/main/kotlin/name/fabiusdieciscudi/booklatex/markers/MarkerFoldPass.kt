@@ -46,23 +46,27 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  * placeholders.
  *
  * A [ListEnvironmentSpec] draws a list the same way: the whole `\begin{itemize}`
- * and `\end{itemize}` are folded and raised, `ITEMIZE` and `END ITEMIZE`, while
- * each `\item` becomes a bullet on the baseline. `\begin` and `\end` are not
- * LatexCommands but a LatexBeginCommand and a LatexEndCommand, so they are found
- * on their own rather than through [MarkerSpecs]; an `\item` is a command like
- * any other, drawn only when the list around it is one this knows.
+ * and `\end{itemize}` fold and an inlay draws them, `ITEMIZE` sunk below the line
+ * where the list opens and `END ITEMIZE` raised above it where the list closes,
+ * while each `\item` becomes a bullet on the baseline. `\begin` and `\end` are
+ * not LatexCommands but a LatexBeginCommand and a LatexEndCommand, so they are
+ * found on their own rather than through [MarkerSpecs]; an `\item` is a command
+ * like any other, drawn only when the list around it is one this knows.
  */
 class MarkerFoldPass(
     private val psiFile: PsiFile,
     private val editor: Editor,
 ) : TextEditorHighlightingPass(psiFile.project, editor.document) {
 
+    /** Where an inlay marker sits relative to the prose baseline. */
+    private enum class Raise { ABOVE, BELOW }
+
     private data class Fold(
         val startOffset: Int,
         val endOffset: Int,
         val marker: String,
-        /** Raised above the line by an inlay rather than shown as placeholder text. */
-        val superscript: Boolean = false,
+        /** When set, an inlay draws the marker off the baseline -- above or below -- rather than as placeholder text. */
+        val raise: Raise? = null,
     )
 
     private var folds: List<Fold> = emptyList()
@@ -106,7 +110,7 @@ class MarkerFoldPass(
 
         // The specs that take an argument are the language ones, and those are
         // the ones that go up. \ellipsis stands on the baseline where it is.
-        return listOf(Fold(start, end, spec.marker, superscript = spec.requiresArgument))
+        return listOf(Fold(start, end, spec.marker, raise = if (spec.requiresArgument) Raise.ABOVE else null))
     }
 
     private fun LatexCommands.toWrapFolds(spec: WrapSpec): List<Fold> {
@@ -175,22 +179,22 @@ class MarkerFoldPass(
         return listOf(Fold(start, end, spec.itemMarker))
     }
 
-    /** The raised marker for a `\begin{...}` this draws, over the whole command. */
+    /** The marker for a `\begin{...}` this draws, sunk below the line, over the whole command. */
     private fun LatexBeginCommand.toListFold(): List<Fold> {
         val spec = ListEnvironments.forEnvironment(envIdentifier?.name) ?: return emptyList()
-        return raisedFold(textRange, spec.beginMarker)
+        return offBaselineFold(textRange, spec.beginMarker, Raise.BELOW)
     }
 
-    /** The raised marker for the matching `\end{...}`, over the whole command. */
+    /** The marker for the matching `\end{...}`, raised above the line, over the whole command. */
     private fun LatexEndCommand.toListFold(): List<Fold> {
         val spec = ListEnvironments.forEnvironment(envIdentifier?.name) ?: return emptyList()
-        return raisedFold(textRange, spec.endMarker)
+        return offBaselineFold(textRange, spec.endMarker, Raise.ABOVE)
     }
 
-    /** One raised fold over [range], or none if the range is empty. */
-    private fun raisedFold(range: TextRange, marker: String): List<Fold> {
+    /** One off-baseline fold over [range], or none if the range is empty. */
+    private fun offBaselineFold(range: TextRange, marker: String, raise: Raise): List<Fold> {
         if (range.isEmpty) return emptyList()
-        return listOf(Fold(range.startOffset, range.endOffset, marker, superscript = true))
+        return listOf(Fold(range.startOffset, range.endOffset, marker, raise = raise))
     }
 
     override fun doApplyInformationToEditor() {
@@ -213,7 +217,7 @@ class MarkerFoldPass(
                 val region = foldingModel.createFoldRegion(
                     fold.startOffset,
                     fold.endOffset,
-                    if (fold.superscript) HIDDEN else fold.marker,
+                    if (fold.raise != null) HIDDEN else fold.marker,
                     null,
                     true,
                 )
@@ -230,11 +234,11 @@ class MarkerFoldPass(
         // inside a collapsed region is not drawn, so it is anchored to the
         // offset just past it and tied to the text that follows, which puts it
         // between the hidden command and its opening brace.
-        folds.filter { it.superscript }.forEach { fold ->
+        folds.filter { it.raise != null }.forEach { fold ->
             val inlay = editor.inlayModel.addInlineElement(
                 fold.endOffset,
                 false,
-                SuperscriptInlayRenderer(fold.marker),
+                SuperscriptInlayRenderer(fold.marker, below = fold.raise == Raise.BELOW),
             )
             if (inlay == null) {
                 thisLogger().warn("Refused marker inlay at ${fold.endOffset}")
@@ -249,8 +253,8 @@ class MarkerFoldPass(
         val OUR_INLAYS: Key<MutableList<Inlay<*>>> = Key.create("booklatex.markers.inlays")
 
         /**
-         * An empty placeholder: the fold hides its text behind nothing. A
-         * superscript marker paints over it with an inlay; a style fold ([toStyleFolds])
+         * An empty placeholder: the fold hides its text behind nothing. An
+         * off-baseline marker paints over it with an inlay; a style fold ([toStyleFolds])
          * wants only the wrapping gone and leaves it empty. Should the folding
          * model refuse an empty placeholder, a zero-width space is the fallback.
          */

@@ -19,13 +19,14 @@ import java.awt.Rectangle
 import java.awt.RenderingHints
 
 /**
- * Paints a short marker raised above the line, in place of the command it stands for.
+ * Paints a short marker off the line, above it or below, in place of the command it stands for.
  *
  * The folding model can only put a plain string where a command was, drawn on
  * the same baseline as the prose and with the scheme's folded-text attributes.
- * There is no attribute for a superscript, so a marker that is to sit above the
+ * There is no attribute for a superscript, so a marker that is to sit off the
  * line cannot be a fold placeholder at all: the fold hides the command and this
- * renderer, hung off an inline inlay just after it, draws the marker instead.
+ * renderer, hung off an inline inlay just after it, draws the marker instead --
+ * raised by default, or sunk below the line when [below] is set.
  *
  * A [baseline] string, when given, is drawn after the raised one, on the line
  * and in the editor's own face at its own size: it is prose, and stays prose.
@@ -41,6 +42,8 @@ import java.awt.RenderingHints
 class SuperscriptInlayRenderer(
     private val raised: String,
     private val baseline: String = "",
+    /** When true the marker sinks below the prose baseline instead of rising above it. */
+    private val below: Boolean = false,
 ) : EditorCustomElementRenderer {
 
     override fun calcWidthInPixels(inlay: Inlay<*>): Int {
@@ -71,19 +74,22 @@ class SuperscriptInlayRenderer(
             ?: textAttributes.foregroundColor
             ?: editor.colorsScheme.defaultForeground
 
-        // The baseline of the surrounding prose, and above it the one the raised
-        // text sits on: climbed by a share of the ascent. Both are measured on
-        // the editor's own font rather than on the marker's, because what the
-        // marker has to line up with is the text.
+        // The baseline of the surrounding prose, and the one the marker sits on:
+        // climbed by a share of the ascent above it, or dropped by a share of the
+        // descent below it. Both are measured on the editor's own font rather than
+        // on the marker's, because what the marker has to line up with is the text.
         val proseMetrics = editor.contentComponent.getFontMetrics(proseFont(editor))
         val proseBaseline = (targetRegion.y + proseMetrics.ascent).toFloat()
-        val raisedBaseline = proseBaseline - proseMetrics.ascent * RAISE
+        val markerBaseline = if (below)
+            proseBaseline + proseMetrics.descent * SINK
+        else
+            proseBaseline - proseMetrics.ascent * RAISE
 
         var x = targetRegion.x.toFloat()
 
         val raisedFont = markerFont(editor)
         g2.font = raisedFont
-        g2.drawString(raised, x, raisedBaseline)
+        g2.drawString(raised, x, markerBaseline)
         x += editor.contentComponent.getFontMetrics(raisedFont).stringWidth(raised)
 
         if (baseline.isNotEmpty()) {
@@ -113,7 +119,10 @@ class SuperscriptInlayRenderer(
         /** Small enough to read as a marker, large enough to read at all. */
         const val SCALE = 0.70f
 
-        /** The share of the ascent the baseline climbs. */
+        /** The share of the ascent the baseline climbs when rising above the line. */
         const val RAISE = 0.38f
+
+        /** The share of the descent the baseline drops when sinking below it. */
+        const val SINK = 0.9f
     }
 }
