@@ -36,6 +36,27 @@ data class WrapSpec(
     val closing: String,
 )
 
+/** The typographic weight a [StyleSpec] gives the prose it holds. */
+enum class ProseStyle { BOLD, ITALIC }
+
+/**
+ * A command that leaves nothing behind but its argument, set in a face.
+ *
+ * `\textbf{foo}` reads as `foo` in bold, `\emph{foo}` as `foo` in italic. The
+ * command token and both braces fold away entirely — there is no marker in their
+ * place, because the face is the marker: bold text is already visibly `\textbf`,
+ * and a code beside it would only repeat what the eye can see.
+ *
+ * What is left is the document's own text, editable and spellchecked; the fold
+ * hides the wrapping and [StyledProseAnnotator] leans or thickens what is
+ * between it. This is the one thing [WrapSpec] cannot do, since it puts a visible
+ * character where each brace was; here the braces are meant to vanish.
+ */
+data class StyleSpec(
+    val commandName: String,
+    val style: ProseStyle,
+)
+
 /**
  * A list environment drawn by name rather than by its `\begin` and `\end`.
  *
@@ -99,6 +120,19 @@ object WrapSpecs {
 
     fun forCommand(commandName: String?): WrapSpec? =
         ALL.firstOrNull { it.commandName == commandName }
+}
+
+object StyleSpecs {
+
+    // LatexCommands.getName() keeps the leading backslash.
+    val TEXTBF = StyleSpec("\\textbf", ProseStyle.BOLD)
+    val EMPH = StyleSpec("\\emph", ProseStyle.ITALIC)
+
+    val ALL: List<StyleSpec> = listOf(TEXTBF, EMPH)
+
+    private val BY_NAME: Map<String, StyleSpec> = ALL.associateBy { it.commandName }
+
+    fun forCommand(commandName: String?): StyleSpec? = BY_NAME[commandName]
 }
 
 object ListEnvironments {

@@ -90,6 +90,7 @@ class MarkerFoldPass(
     private fun LatexCommands.toFolds(): List<Fold> {
         MarkerSpecs.forCommand(name)?.let { return toMarkerFold(it) }
         WrapSpecs.forCommand(name)?.let { return toWrapFolds(it) }
+        StyleSpecs.forCommand(name)?.let { return toStyleFolds() }
         if (name == ListEnvironments.ITEM_COMMAND) return toItemFold()
         return emptyList()
     }
@@ -122,6 +123,36 @@ class MarkerFoldPass(
         return listOf(
             Fold(textRange.startOffset, openingEnd, spec.opening),
             Fold(closingStart, argument.endOffset, spec.closing),
+        )
+    }
+
+    /**
+     * Two folds that hide the wrapping of `\textbf{...}` and leave the prose.
+     *
+     * The opening one swallows `\textbf{`, the closing one the `}`, both behind
+     * nothing at all: there is no marker, because the face the annotator gives
+     * the prose is the marker. The prose between them is untouched, and stays the
+     * document's own text. [StyledProseAnnotator] is what makes it bold or lean.
+     *
+     * An empty argument is left as source: there is nothing to set in a face, and
+     * folding `\textbf{}` to nothing would erase a command the author is likely
+     * still typing into.
+     *
+     * The fold is the same whichever face the command asks for -- bold or italic
+     * both hide their wrapping the same way -- so it takes no spec; the face is
+     * [StyledProseAnnotator]'s alone.
+     */
+    private fun LatexCommands.toStyleFolds(): List<Fold> {
+        val argument = parameterList.firstOrNull { it.requiredParam != null }?.textRange ?: return emptyList()
+
+        // The argument range carries its braces: the prose is what is inside them.
+        val contentStart = argument.startOffset + 1
+        val contentEnd = argument.endOffset - 1
+        if (contentStart >= contentEnd) return emptyList()
+
+        return listOf(
+            Fold(textRange.startOffset, contentStart, HIDDEN),
+            Fold(contentEnd, argument.endOffset, HIDDEN),
         )
     }
 
@@ -218,9 +249,10 @@ class MarkerFoldPass(
         val OUR_INLAYS: Key<MutableList<Inlay<*>>> = Key.create("booklatex.markers.inlays")
 
         /**
-         * The placeholder of a fold whose marker an inlay paints instead: empty,
-         * so the marker is not drawn twice. Should the folding model refuse an
-         * empty placeholder, a zero-width space is the fallback.
+         * An empty placeholder: the fold hides its text behind nothing. A
+         * superscript marker paints over it with an inlay; a style fold ([toStyleFolds])
+         * wants only the wrapping gone and leaves it empty. Should the folding
+         * model refuse an empty placeholder, a zero-width space is the fallback.
          */
         const val HIDDEN = ""
     }

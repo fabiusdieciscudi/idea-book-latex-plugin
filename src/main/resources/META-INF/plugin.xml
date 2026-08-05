@@ -101,6 +101,10 @@
             language="Latex"
             implementationClass="name.fabiusdieciscudi.booklatex.markers.NoteProseAnnotator"/>
 
+        <annotator
+            language="Latex"
+            implementationClass="name.fabiusdieciscudi.booklatex.markers.StyledProseAnnotator"/>
+
         <typedHandler
             implementation="name.fabiusdieciscudi.booklatex.markers.EllipsisTypedHandler"/>
 
