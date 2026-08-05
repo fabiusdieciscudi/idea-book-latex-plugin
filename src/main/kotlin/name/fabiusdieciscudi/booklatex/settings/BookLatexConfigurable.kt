@@ -9,6 +9,7 @@ import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.FormBuilder
 import name.fabiusdieciscudi.booklatex.BookLatexBundle
@@ -23,6 +24,8 @@ class BookLatexConfigurable : Configurable {
 
     private val enabled = JBCheckBox(BookLatexBundle.message("settings.colorScheme.enabled"))
     private val schemeName = ComboBox<String>()
+    private val editorFontFamily = ComboBox<String>()
+    private val editorFontSize = JBIntSpinner(LatexEditorColorScheme.DEFAULT_FONT_SIZE, MIN_FONT_SIZE, MAX_FONT_SIZE)
     private val fontFamily = ComboBox<String>()
 
     private val settings get() = BookLatexRenderingSettings.getInstance()
@@ -30,11 +33,18 @@ class BookLatexConfigurable : Configurable {
     override fun getDisplayName(): String = BookLatexBundle.message("settings.displayName")
 
     override fun createComponent(): JComponent {
-        enabled.addActionListener { schemeName.isEnabled = enabled.isSelected }
+        enabled.addActionListener {
+            val on = enabled.isSelected
+            schemeName.isEnabled = on
+            editorFontFamily.isEnabled = on
+            editorFontSize.isEnabled = on
+        }
 
         return FormBuilder.createFormBuilder()
             .addComponent(enabled)
             .addLabeledComponent(BookLatexBundle.message("settings.colorScheme.label"), schemeName)
+            .addLabeledComponent(BookLatexBundle.message("settings.editorFont.label"), editorFontFamily)
+            .addLabeledComponent(BookLatexBundle.message("settings.editorFontSize.label"), editorFontSize)
             .addSeparator()
             .addLabeledComponent(BookLatexBundle.message("settings.renderFont.label"), fontFamily)
             .addComponentFillVertically(JPanel(), 0)
@@ -44,11 +54,15 @@ class BookLatexConfigurable : Configurable {
     override fun isModified(): Boolean =
         enabled.isSelected != settings.latexColorScheme ||
             schemeName.selectedItem != settings.latexColorSchemeName ||
+            editorFontFamily.selectedItem != settings.editorFontFamily ||
+            editorFontSize.number != settings.editorFontSize ||
             fontFamily.selectedItem != settings.renderFontFamily
 
     override fun apply() {
         settings.latexColorScheme = enabled.isSelected
         (schemeName.selectedItem as? String)?.let { settings.latexColorSchemeName = it }
+        (editorFontFamily.selectedItem as? String)?.let { settings.editorFontFamily = it }
+        settings.editorFontSize = editorFontSize.number
         (fontFamily.selectedItem as? String)?.let { settings.renderFontFamily = it }
 
         LatexEditorColorScheme.applyToOpenEditors()
@@ -62,10 +76,14 @@ class BookLatexConfigurable : Configurable {
     override fun reset() {
         // Rebuilt every time: the user may have added a scheme, or a font, since.
         fill(schemeName, LatexEditorColorScheme.availableSchemeNames(), settings.latexColorSchemeName)
+        fill(editorFontFamily, RenderFonts.availableFamilies(), settings.editorFontFamily)
         fill(fontFamily, RenderFonts.availableFamilies(), settings.renderFontFamily)
+        editorFontSize.value = settings.editorFontSize
 
         enabled.isSelected = settings.latexColorScheme
         schemeName.isEnabled = enabled.isSelected
+        editorFontFamily.isEnabled = enabled.isSelected
+        editorFontSize.isEnabled = enabled.isSelected
     }
 
     /** Keeps the stored value in the list even when it no longer exists, so that
@@ -74,5 +92,12 @@ class BookLatexConfigurable : Configurable {
         val items = if (current in available) available else available + current
         combo.model = DefaultComboBoxModel(items.toTypedArray())
         combo.selectedItem = current
+    }
+
+    private companion object {
+        // Wide enough for a page-sized face and then some; the editor clamps
+        // anything odder than this on its own.
+        const val MIN_FONT_SIZE = 6
+        const val MAX_FONT_SIZE = 96
     }
 }

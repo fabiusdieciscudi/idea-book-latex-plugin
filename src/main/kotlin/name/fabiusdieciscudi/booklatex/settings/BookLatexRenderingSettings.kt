@@ -28,6 +28,8 @@ class BookLatexRenderingSettings :
         var smartRendering: Boolean by property(true)
         var latexColorScheme: Boolean by property(true)
         var latexColorSchemeName: String? by string(LatexEditorColorScheme.DEFAULT_SCHEME_NAME)
+        var editorFontFamily: String? by string(LatexEditorColorScheme.DEFAULT_FONT_FAMILY)
+        var editorFontSize: Int by property(LatexEditorColorScheme.DEFAULT_FONT_SIZE)
         var renderFontFamily: String? by string(RenderFonts.DEFAULT_FAMILY)
     }
 
@@ -57,6 +59,23 @@ class BookLatexRenderingSettings :
         get() = state.latexColorSchemeName ?: LatexEditorColorScheme.DEFAULT_SCHEME_NAME
         set(value) {
             state.latexColorSchemeName = value
+        }
+
+    /**
+     * The face LaTeX editors are drawn in, superseding the one the colour scheme
+     * ships with. Only in effect while the LaTeX colour scheme is on.
+     */
+    var editorFontFamily: String
+        get() = state.editorFontFamily ?: LatexEditorColorScheme.DEFAULT_FONT_FAMILY
+        set(value) {
+            state.editorFontFamily = value
+        }
+
+    /** The size of that face, in points. */
+    var editorFontSize: Int
+        get() = state.editorFontSize
+        set(value) {
+            state.editorFontSize = value
         }
 
     /** The family used to paint the sticky notes and the attribute strips. */
