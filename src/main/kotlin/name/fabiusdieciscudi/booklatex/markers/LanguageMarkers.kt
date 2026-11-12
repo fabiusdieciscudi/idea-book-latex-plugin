@@ -16,6 +16,10 @@ package name.fabiusdieciscudi.booklatex.markers
  * The codes are ISO 639-1 where one exists. Two do not:
  *  - Ligurian has none, so its ISO 639-3 code is used.
  *  - Provençal has none either, and is classified under Occitan.
+ *
+ * `\gaelic` is Irish under another name: the preamble sets it with babel's
+ * `irish`, so it shows Irish's code. Should it ever become Scottish Gaelic, the
+ * code is `GD`.
  */
 data class LanguageSpec(val name: String, val isoCode: String) {
 
@@ -33,8 +37,10 @@ object Languages {
         LanguageSpec("dutch", "NL"),
         LanguageSpec("english", "EN"),
         LanguageSpec("french", "FR"),
+        LanguageSpec("gaelic", "GA"),
         LanguageSpec("german", "DE"),
         LanguageSpec("irish", "GA"),
+        LanguageSpec("italian", "IT"),
         LanguageSpec("japanese", "JA"),
         LanguageSpec("latin", "LA"),
         LanguageSpec("ligurian", "LIJ"),

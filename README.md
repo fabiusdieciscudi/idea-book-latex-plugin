@@ -201,13 +201,14 @@ Two commands per language: one for prose, one for names.
 Only the command name is hidden. The braces and their contents stay in the
 document, so a foreign phrase is edited like any other text.
 
-Thirteen languages are recognised, each shown by its ISO code: Catalan `CA`,
-Dutch `NL`, English `EN`, French `FR`, German `DE`, Irish `GA`, Japanese `JA`,
-Latin `LA`, Ligurian `LIJ`, Provençal `OC`, Spanish `ES`, Swedish `SV`, Turkish
-`TR`.
+Fifteen languages are recognised, each shown by its ISO code: Catalan `CA`,
+Dutch `NL`, English `EN`, French `FR`, Gaelic `GA`, German `DE`, Irish `GA`,
+Italian `IT`, Japanese `JA`, Latin `LA`, Ligurian `LIJ`, Provençal `OC`, Spanish
+`ES`, Swedish `SV`, Turkish `TR`.
 
 Ligurian and Provençal have no two-letter ISO code; the three-letter code and
-the code of Occitan are used respectively.
+the code of Occitan are used respectively. Gaelic is set as Irish by the
+preamble, and shows Irish's code.
 
 ---
 

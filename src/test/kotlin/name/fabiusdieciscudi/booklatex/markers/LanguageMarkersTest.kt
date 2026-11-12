@@ -12,14 +12,14 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * The twenty-six language commands are generated from thirteen rows. These are
+ * The thirty language commands are generated from fifteen rows. These are
  * the invariants that generation has to keep.
  */
 class LanguageMarkersTest {
 
     @Test
     fun `every language yields a prose command and a name command`() {
-        assertEquals(13, Languages.ALL.size)
+        assertEquals(15, Languages.ALL.size)
 
         val fromLanguages = Languages.ALL.flatMap { listOf(it.proseCommand, it.nameCommand) }
         assertEquals(2 * Languages.ALL.size, fromLanguages.toSet().size)
