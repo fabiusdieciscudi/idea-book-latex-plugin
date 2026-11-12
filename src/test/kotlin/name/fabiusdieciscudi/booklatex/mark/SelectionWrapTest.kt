@@ -127,6 +127,40 @@ class SelectionWrapTest {
         assertNull(wrapped("⟦\\scene[notte]⟧{strada}"))
     }
 
+    /** What a block of lines would wrap, or `null`. */
+    private fun block(marked: String): String? {
+        val start = marked.indexOf('⟦')
+        val end = marked.indexOf('⟧') - 1
+        val text = marked.replace("⟦", "").replace("⟧", "")
+        return SelectionWrap.lineBlockToWrap(text, start, end)?.substring(text)
+    }
+
+    @Test
+    fun `a block of whole lines is wrapped`() {
+        assertEquals("Controllare la data.", block("Prima.\n⟦Controllare la data.\n⟧Dopo."))
+        assertEquals("Uno.\nDue.", block("Prima.\n    ⟦Uno.\nDue.⟧\nDopo."))
+        assertEquals("Uno.", block("⟦    Uno.  % nota\n⟧"))
+    }
+
+    @Test
+    fun `a block may be the whole of a line even when the selection is not`() {
+        // The whitespace the selection left out is whitespace all the same.
+        assertEquals("Uno.", block("    ⟦Uno.⟧   \nDue."))
+    }
+
+    @Test
+    fun `part of a line is not a block`() {
+        assertNull(block("Era ⟦mattina o pomeriggio⟧ quando entrò."))
+        assertNull(block("⟦Era mattina⟧ quando entrò."))
+        assertNull(block("Prima riga.\nEra ⟦mattina.\nDue.⟧"))
+        assertNull(block("⟦Uno.\nDue⟧ e tre."))
+    }
+
+    @Test
+    fun `a block is still checked as any other selection`() {
+        assertNull(block("⟦\\french{du\n⟧pain}"))
+    }
+
     @Test
     fun `a group after a blank line is not an argument`() {
         assertEquals("{testo}", wrapped("\\french{a}\n\n⟦{testo}⟧"))

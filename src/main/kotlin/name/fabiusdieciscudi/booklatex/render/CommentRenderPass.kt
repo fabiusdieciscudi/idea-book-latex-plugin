@@ -65,7 +65,8 @@ class CommentRenderPass(
             return null
         }
 
-        // The body may now span several lines; the note paints a single one.
+        // The body may span several lines in the source; the note wraps it to
+        // its own width, so the line breaks of the source do not matter.
         val body = raw.replace(WHITESPACE, " ").trim()
         if (body.isEmpty()) return null
 

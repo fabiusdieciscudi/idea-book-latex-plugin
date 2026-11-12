@@ -84,11 +84,18 @@ Indentation before the command is fine, and so is a trailing `%`. A `\comment`
 in the middle of a sentence is left as source, because the note takes whole
 lines.
 
+**Select whole lines**, right-click, and choose *Mark As | Comment* to turn them
+into a note. The entry works on a block of whole lines only, and is disabled
+for a phrase within a line; otherwise the selection is checked as for
+[cuts and alternatives](#cuts-and-alternatives).
+
 **Double-click the note** to open an editor for its text: a real LaTeX editor,
 with completion, several lines tall. Confirm and the note shows the new text.
 
-A long comment is drawn on one line and cut off on the right; the text is all
-still there, in the file.
+The note is set in a smaller type than the prose. A short comment gets a note as
+wide as itself; a long one wraps within the width of the editor, and the note
+grows as tall as it needs, so nothing is cut off. Resize the window and the note
+wraps again.
 
 ---
 

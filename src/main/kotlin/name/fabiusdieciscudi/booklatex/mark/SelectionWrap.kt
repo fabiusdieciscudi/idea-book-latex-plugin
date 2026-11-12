@@ -7,6 +7,7 @@ package name.fabiusdieciscudi.booklatex.mark
 
 import com.intellij.openapi.util.TextRange
 import name.fabiusdieciscudi.booklatex.document.insideLatexComment
+import name.fabiusdieciscudi.booklatex.document.ownsItsLines
 
 /**
  * Where a selection can be wrapped in a one-argument command without breaking
@@ -61,6 +62,26 @@ object SelectionWrap {
         if (startsWithDetachedArgument(text, s) || endsBeforeItsArguments(text, e)) return null
 
         return TextRange(s, e)
+    }
+
+    /**
+     * As [rangeToWrap], but only for a block of whole lines: what is left
+     * outside the braces on the first line may be indentation and nothing else,
+     * on the last line whitespace or a `%` comment. Those are the lines a
+     * command must own to be drawn as a block -- a `\comment` as a sticky note
+     * -- so a selection that would wrap less than that is refused.
+     */
+    fun lineBlockToWrap(text: CharSequence, start: Int, end: Int): TextRange? {
+        val range = rangeToWrap(text, start, end) ?: return null
+        val before = text.subSequence(lineStart(text, range.startOffset), range.startOffset).toString()
+        val after = text.subSequence(range.endOffset, lineEnd(text, range.endOffset)).toString()
+        return if (ownsItsLines(before, after)) range else null
+    }
+
+    private fun lineEnd(text: CharSequence, offset: Int): Int {
+        var index = offset
+        while (index < text.length && text[index] != '\n') index++
+        return index
     }
 
     private fun trim(text: CharSequence, start: Int, end: Int): Pair<Int, Int>? {

@@ -13,8 +13,10 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import name.fabiusdieciscudi.booklatex.BookLatexBundle
+import name.fabiusdieciscudi.booklatex.comment.COMMENT_COMMAND_NAME
 import name.fabiusdieciscudi.booklatex.insert.isLatexEditor
 import name.fabiusdieciscudi.booklatex.markers.ALTERNATE_COMMAND_NAME
 import name.fabiusdieciscudi.booklatex.markers.Languages
@@ -87,7 +89,7 @@ open class MarkAsAction : AnAction {
             {
                 editor.caretModel.runForEachCaret({ caret ->
                     if (!caret.hasSelection()) return@runForEachCaret
-                    val range = SelectionWrap.rangeToWrap(
+                    val range = rangeToWrap(
                         document.charsSequence,
                         caret.selectionStart,
                         caret.selectionEnd,
@@ -110,8 +112,12 @@ open class MarkAsAction : AnAction {
         val text = editor.document.charsSequence
         val selected = editor.caretModel.allCarets.filter { it.hasSelection() }
         return selected.isNotEmpty() &&
-            selected.all { SelectionWrap.rangeToWrap(text, it.selectionStart, it.selectionEnd) != null }
+            selected.all { rangeToWrap(text, it.selectionStart, it.selectionEnd) != null }
     }
+
+    /** What of a selection goes between the braces, or `null` if it cannot be wrapped. */
+    protected open fun rangeToWrap(text: CharSequence, start: Int, end: Int): TextRange? =
+        SelectionWrap.rangeToWrap(text, start, end)
 }
 
 /** Mark As | Suppressed: `\suppressed{...}`, prose cut but kept. */
@@ -119,6 +125,17 @@ class MarkAsSuppressedAction : MarkAsAction(SUPPRESSED_COMMAND_NAME)
 
 /** Mark As | Alternate: `\alternate{...}`, another version of a passage. */
 class MarkAsAlternateAction : MarkAsAction(ALTERNATE_COMMAND_NAME)
+
+/**
+ * Mark As | Comment: `\comment{...}`, a note to the author, drawn as a sticky
+ * note. Only for a block of whole lines, since those are the only comments the
+ * note is drawn for: the entry is disabled for a phrase within a line.
+ */
+class MarkAsCommentAction : MarkAsAction(COMMENT_COMMAND_NAME) {
+
+    override fun rangeToWrap(text: CharSequence, start: Int, end: Int): TextRange? =
+        SelectionWrap.lineBlockToWrap(text, start, end)
+}
 
 /** Mark As | Newspaper: `\newspapername{...}`, the name of a newspaper. */
 class MarkAsNewspaperAction : MarkAsAction(MarkerSpecs.NEWSPAPER_NAME.commandName)
