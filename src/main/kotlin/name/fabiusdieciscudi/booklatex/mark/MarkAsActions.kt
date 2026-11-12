@@ -126,6 +126,9 @@ class MarkAsNewspaperAction : MarkAsAction(MarkerSpecs.NEWSPAPER_NAME.commandNam
 /** Mark As | Work of Art: `\workofartname{...}`, the title of a book, a painting, a film. */
 class MarkAsWorkOfArtAction : MarkAsAction(MarkerSpecs.WORK_OF_ART_NAME.commandName)
 
+/** Mark As | Acronym: `\acronym{...}`, set in small capitals in the book. */
+class MarkAsAcronymAction : MarkAsAction(MarkerSpecs.ACRONYM.commandName)
+
 /**
  * Mark As | Language: two entries per language the book marks up, in
  * alphabetical order of its name.

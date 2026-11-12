@@ -217,7 +217,7 @@ Language* to wrap it in one of the two commands: *French* turns `du pain` into
 `\french{du pain}`, *French name* turns `Jean` into `\frenchname{Jean}`. The
 selection is checked as for [cuts and alternatives](#cuts-and-alternatives).
 
-### Newspapers and works of art
+### Newspapers, works of art and acronyms
 
 `\newspapername{...}` and `\workofartname{...}` are names too, and are drawn the
 same way, under a raised label. The newspaper stands upright; the work of art is
@@ -228,7 +228,14 @@ in italics, as the book sets it:
 \workofartname{La Gioconda}         →  WoA{La Gioconda}   (in italics)
 ```
 
-Both are under *Mark As*, as *Newspaper* and *Work of Art*.
+`\acronym{...}` is labelled the same way, and stands upright: the book sets it in
+small capitals, which the editor cannot draw, and the label says so.
+
+```latex
+\acronym{NATO}                      →  ACR{NATO}
+```
+
+All three are under *Mark As*, as *Newspaper*, *Work of Art* and *Acronym*.
 
 ---
 

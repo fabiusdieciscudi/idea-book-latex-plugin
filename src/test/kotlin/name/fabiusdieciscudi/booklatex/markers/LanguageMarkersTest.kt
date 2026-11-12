@@ -102,6 +102,13 @@ class LanguageMarkersTest {
     }
 
     @Test
+    fun `an acronym carries a label, needs an argument and stands upright`() {
+        assertEquals("ACR", MarkerSpecs.forCommand("\\acronym")?.marker)
+        assertTrue(MarkerSpecs.ACRONYM.requiresArgument)
+        assertTrue("\\acronym" !in MarkerSpecs.ITALIC_COMMANDS)
+    }
+
+    @Test
     fun `foreign prose and works of art lean, names and newspapers do not`() {
         assertTrue(MarkerSpecs.ITALIC_COMMANDS.containsAll(Languages.PROSE_COMMANDS))
         assertTrue("\\workofartname" in MarkerSpecs.ITALIC_COMMANDS)

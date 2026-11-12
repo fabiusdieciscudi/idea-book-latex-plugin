@@ -45,6 +45,7 @@ class BookLatexBundleTest {
         "action.BookLaTeX.MarkAs.Alternate.text",
         "action.BookLaTeX.MarkAs.Newspaper.text",
         "action.BookLaTeX.MarkAs.WorkOfArt.text",
+        "action.BookLaTeX.MarkAs.Acronym.text",
     )
 
     @Test

@@ -180,6 +180,8 @@
                     class="name.fabiusdieciscudi.booklatex.mark.MarkAsNewspaperAction"/>
             <action id="BookLaTeX.MarkAs.WorkOfArt"
                     class="name.fabiusdieciscudi.booklatex.mark.MarkAsWorkOfArtAction"/>
+            <action id="BookLaTeX.MarkAs.Acronym"
+                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsAcronymAction"/>
 
             <group id="BookLaTeX.MarkAs.Languages"
                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsLanguageActionGroup"

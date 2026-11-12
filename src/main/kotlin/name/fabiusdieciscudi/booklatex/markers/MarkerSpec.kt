@@ -118,6 +118,13 @@ object MarkerSpecs {
     val NEWSPAPER_NAME = MarkerSpec("\\newspapername", "Newspaper", requiresArgument = true)
     val WORK_OF_ART_NAME = MarkerSpec("\\workofartname", "WoA", requiresArgument = true)
 
+    /**
+     * An acronym, which the book sets in small capitals. The editor cannot draw
+     * those, so the letters stand as written, and the raised `ACR` says how
+     * they will be printed.
+     */
+    val ACRONYM = MarkerSpec("\\acronym", "ACR", requiresArgument = true)
+
     /** The commands whose contents [ForeignProseItalicAnnotator] sets in italics. */
     val ITALIC_COMMANDS: Set<String> = Languages.PROSE_COMMANDS + WORK_OF_ART_NAME.commandName
 
@@ -130,7 +137,7 @@ object MarkerSpecs {
     }
 
     val ALL: List<MarkerSpec> =
-        LANGUAGES + ELLIPSIS + NOTE + SUPPRESSED + ALTERNATE + NEWSPAPER_NAME + WORK_OF_ART_NAME
+        LANGUAGES + ELLIPSIS + NOTE + SUPPRESSED + ALTERNATE + NEWSPAPER_NAME + WORK_OF_ART_NAME + ACRONYM
 
     private val BY_NAME: Map<String, MarkerSpec> = ALL.associateBy { it.commandName }
 
