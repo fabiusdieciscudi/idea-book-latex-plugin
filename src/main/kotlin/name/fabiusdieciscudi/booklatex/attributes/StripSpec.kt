@@ -29,7 +29,14 @@ data class StripSpec(
     val inheritableKeys: List<String> = emptyList(),
     /** Between "written here" and "absent". Defaults to the latter. */
     val inheritedValueColor: Color = emptyValueColor,
-)
+) {
+    /**
+     * What the strip opens with, in bold: `SCENE`, `BEAT`, `SHOT`. The colours
+     * tell the three apart only to someone who has learnt them; the word tells
+     * anyone. Taken from the command name, so a new command brings its own.
+     */
+    val title: String get() = commandName.removePrefix("\\").uppercase()
+}
 
 object StripSpecs {
 

@@ -112,8 +112,10 @@ width of the editor.
 ]%
 ```
 
-reads as a strip: **NAME** `\Jacques commenta con zio \Bernard`  **SETTING** … and
-so on, left to right.
+reads as a strip: **SCENE**  **NAME** `\Jacques commenta con zio \Bernard`
+**SETTING** … and so on, left to right. Each strip opens with the name of its
+command in bold — **SCENE**, **BEAT**, **SHOT** — and is set in a smaller type than
+the prose, so that it reads as a signpost between passages rather than as one.
 
 **Double-click the strip** to open a dialog with one field per attribute, each a
 LaTeX editor with completion. What you see is the raw source: the `date` field
