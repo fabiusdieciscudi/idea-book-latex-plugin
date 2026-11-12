@@ -217,6 +217,19 @@ Language* to wrap it in one of the two commands: *French* turns `du pain` into
 `\french{du pain}`, *French name* turns `Jean` into `\frenchname{Jean}`. The
 selection is checked as for [cuts and alternatives](#cuts-and-alternatives).
 
+### Newspapers and works of art
+
+`\newspapername{...}` and `\workofartname{...}` are names too, and are drawn the
+same way, under a raised label. The newspaper stands upright; the work of art is
+in italics, as the book sets it:
+
+```latex
+\newspapername{Corriere della Sera}       →  Newspaper{Corriere della Sera}
+\workofartname{La Gioconda}         →  WoA{La Gioconda}   (in italics)
+```
+
+Both are under *Mark As*, as *Newspaper* and *Work of Art*.
+
 ---
 
 ## Quotations and ellipses

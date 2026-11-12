@@ -106,6 +106,21 @@ object MarkerSpecs {
     val SUPPRESSED = MarkerSpec(SUPPRESSED_COMMAND_NAME, "Suppressed", requiresArgument = true)
     val ALTERNATE = MarkerSpec(ALTERNATE_COMMAND_NAME, "Alternate", requiresArgument = true)
 
+    /**
+     * The name of a newspaper and the title of a work of art, labelled with a
+     * raised word as a language is with its code. `WoA` rather than the whole
+     * phrase: three words raised over a title would weigh more than the title.
+     *
+     * A newspaper stands upright, like `\frenchname`: the book sets it in quotes
+     * or in italics depending on its language, and the editor cannot know which.
+     * A work of art leans, because the book always sets it in italics.
+     */
+    val NEWSPAPER_NAME = MarkerSpec("\\newspapername", "Newspaper", requiresArgument = true)
+    val WORK_OF_ART_NAME = MarkerSpec("\\workofartname", "WoA", requiresArgument = true)
+
+    /** The commands whose contents [ForeignProseItalicAnnotator] sets in italics. */
+    val ITALIC_COMMANDS: Set<String> = Languages.PROSE_COMMANDS + WORK_OF_ART_NAME.commandName
+
     /** Both commands of every language, showing the same code. */
     private val LANGUAGES: List<MarkerSpec> = Languages.ALL.flatMap { language ->
         listOf(
@@ -114,7 +129,8 @@ object MarkerSpecs {
         )
     }
 
-    val ALL: List<MarkerSpec> = LANGUAGES + ELLIPSIS + NOTE + SUPPRESSED + ALTERNATE
+    val ALL: List<MarkerSpec> =
+        LANGUAGES + ELLIPSIS + NOTE + SUPPRESSED + ALTERNATE + NEWSPAPER_NAME + WORK_OF_ART_NAME
 
     private val BY_NAME: Map<String, MarkerSpec> = ALL.associateBy { it.commandName }
 

@@ -94,6 +94,22 @@ class LanguageMarkersTest {
     }
 
     @Test
+    fun `a newspaper and a work of art carry a label and need an argument`() {
+        assertEquals("Newspaper", MarkerSpecs.forCommand("\\newspapername")?.marker)
+        assertEquals("WoA", MarkerSpecs.forCommand("\\workofartname")?.marker)
+        assertTrue(MarkerSpecs.NEWSPAPER_NAME.requiresArgument)
+        assertTrue(MarkerSpecs.WORK_OF_ART_NAME.requiresArgument)
+    }
+
+    @Test
+    fun `foreign prose and works of art lean, names and newspapers do not`() {
+        assertTrue(MarkerSpecs.ITALIC_COMMANDS.containsAll(Languages.PROSE_COMMANDS))
+        assertTrue("\\workofartname" in MarkerSpecs.ITALIC_COMMANDS)
+        assertTrue("\\newspapername" !in MarkerSpecs.ITALIC_COMMANDS)
+        Languages.ALL.forEach { assertTrue(it.nameCommand !in MarkerSpecs.ITALIC_COMMANDS) }
+    }
+
+    @Test
     fun `an unknown command has no spec`() {
         assertNull(MarkerSpecs.forCommand("\\klingon"))
         assertNull(MarkerSpecs.forCommand(null))

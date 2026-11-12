@@ -18,6 +18,7 @@ import name.fabiusdieciscudi.booklatex.BookLatexBundle
 import name.fabiusdieciscudi.booklatex.insert.isLatexEditor
 import name.fabiusdieciscudi.booklatex.markers.ALTERNATE_COMMAND_NAME
 import name.fabiusdieciscudi.booklatex.markers.Languages
+import name.fabiusdieciscudi.booklatex.markers.MarkerSpecs
 import name.fabiusdieciscudi.booklatex.markers.SUPPRESSED_COMMAND_NAME
 
 /**
@@ -118,6 +119,12 @@ class MarkAsSuppressedAction : MarkAsAction(SUPPRESSED_COMMAND_NAME)
 
 /** Mark As | Alternate: `\alternate{...}`, another version of a passage. */
 class MarkAsAlternateAction : MarkAsAction(ALTERNATE_COMMAND_NAME)
+
+/** Mark As | Newspaper: `\newspapername{...}`, the name of a newspaper. */
+class MarkAsNewspaperAction : MarkAsAction(MarkerSpecs.NEWSPAPER_NAME.commandName)
+
+/** Mark As | Work of Art: `\workofartname{...}`, the title of a book, a painting, a film. */
+class MarkAsWorkOfArtAction : MarkAsAction(MarkerSpecs.WORK_OF_ART_NAME.commandName)
 
 /**
  * Mark As | Language: two entries per language the book marks up, in

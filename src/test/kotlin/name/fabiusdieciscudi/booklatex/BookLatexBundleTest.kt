@@ -43,6 +43,8 @@ class BookLatexBundleTest {
         "language.nameEntry",
         "action.BookLaTeX.MarkAs.Suppressed.text",
         "action.BookLaTeX.MarkAs.Alternate.text",
+        "action.BookLaTeX.MarkAs.Newspaper.text",
+        "action.BookLaTeX.MarkAs.WorkOfArt.text",
     )
 
     @Test

@@ -176,6 +176,10 @@
                     class="name.fabiusdieciscudi.booklatex.mark.MarkAsSuppressedAction"/>
             <action id="BookLaTeX.MarkAs.Alternate"
                     class="name.fabiusdieciscudi.booklatex.mark.MarkAsAlternateAction"/>
+            <action id="BookLaTeX.MarkAs.Newspaper"
+                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsNewspaperAction"/>
+            <action id="BookLaTeX.MarkAs.WorkOfArt"
+                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsWorkOfArtAction"/>
 
             <group id="BookLaTeX.MarkAs.Languages"
                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsLanguageActionGroup"

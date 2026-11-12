@@ -23,12 +23,14 @@ import java.awt.Font
  * is among the three things TextAttributes can carry, unlike font size. So the
  * text stays the document's own -- editable, spellchecked -- and only leans.
  *
- * The `...name` variants are left upright: a name is not foreign prose.
+ * The `...name` variants are left upright: a name is not foreign prose. The
+ * title of a work of art, `\workofartname{...}`, leans too, as it does in the
+ * book: see [MarkerSpecs.ITALIC_COMMANDS].
  */
 class ForeignProseItalicAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (element !is LatexCommands || element.name !in Languages.PROSE_COMMANDS) return
+        if (element !is LatexCommands || element.name !in MarkerSpecs.ITALIC_COMMANDS) return
         if (!BookLatexRenderingSettings.getInstance().smartRendering) return
 
         val argument = element.parameterList.firstOrNull { it.requiredParam != null }?.textRange ?: return
