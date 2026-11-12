@@ -47,7 +47,7 @@ at the file you already have.
 
 ## Requirements
 
-- IntelliJ IDEA **2026.1** or later, in the **New UI**
+- IntelliJ IDEA **2026.2** or later, in the **New UI**
 - The **TeXiFy IDEA** plugin (a hard dependency: this plugin will not load without it)
 - A manuscript built on the [Book LaTeX](https://github.com/fabiusdieciscudi/book-latex) preamble
 - The **EB Garamond** font, if you want the scheme to look as intended
@@ -360,7 +360,7 @@ to `build/reports/pluginVerifier/`.
 
 ### First time
 
-You need a **JDK 21**. The Gradle wrapper is committed, so `./gradlew` — and
+You need a **JDK 25**. The Gradle wrapper is committed, so `./gradlew` — and
 the `Makefile` goals that wrap it — work from a fresh clone; the wrapper pins
 the version of Gradle the build expects.
 

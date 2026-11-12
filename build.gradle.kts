@@ -6,10 +6,9 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
-    // Must be >= the Kotlin used to build everything we compile against: the 2026.1 platform ships metadata 2.3.0,
-    // TeXiFy 1.0.1 ships 2.4.0. A compiler reads its own metadata version or older, never newer.
+    // Must be >= the Kotlin used to build everything we compile against: TeXiFy 1.1.1 ships metadata 2.4.0. A compiler reads its own metadata version or older, never newer.
     kotlin("jvm") version "2.4.0"
-    id("org.jetbrains.intellij.platform") version "2.17.0"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
 }
 
 group = "name.fabiusdieciscudi"
@@ -35,11 +34,11 @@ dependencies {
         if (localIdePath != null) {
             local(localIdePath)
         } else {
-            intellijIdea("2026.1.4")
+            intellijIdea("2026.2.4")
         }
 
         // TeXiFy IDEA. The plugin ID is the historical `nl.rubensten.*`, kept for backwards compatibility
-        plugin("nl.rubensten.texifyidea", "1.0.1")
+        plugin("nl.rubensten.texifyidea", "1.1.1")
 
         // Puts the platform, and the Kotlin stdlib it bundles, on the test classpath. Without it the unit tests have
         // no runtime.
@@ -49,15 +48,16 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 }
 
-// The IntelliJ Platform requires JDK 21 from 2024.2 onwards.
+// TeXiFy is compiled for JDK 25 from 1.1.0 onwards, and so is the 2026.2 platform it requires: the tests could not
+// load either on an older runtime.
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 intellijPlatform {
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "261"
+            sinceBuild = "262"
             // No upper bound: the plugin keeps working across IDE updates.
             untilBuild = provider { null }
         }
