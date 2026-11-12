@@ -5,6 +5,7 @@
 
 package name.fabiusdieciscudi.booklatex
 
+import name.fabiusdieciscudi.booklatex.markers.Languages
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.ResourceBundle
@@ -38,6 +39,8 @@ class BookLatexBundleTest {
         "action.BookLaTeX.ReloadDialogueDefinitions.text",
         "action.BookLaTeX.ReloadDialogueDefinitions.description",
         "group.BookLaTeX.MarkAs.text",
+        "group.BookLaTeX.MarkAs.Languages.text",
+        "language.nameEntry",
         "action.BookLaTeX.MarkAs.Suppressed.text",
         "action.BookLaTeX.MarkAs.Alternate.text",
     )
@@ -49,8 +52,14 @@ class BookLatexBundleTest {
     }
 
     @Test
+    fun `every language has a name for the Mark As menu`() {
+        val missing = Languages.ALL.map { "language.${it.name}" }.filterNot { bundle.containsKey(it) }
+        assertTrue("missing keys: $missing", missing.isEmpty())
+    }
+
+    @Test
     fun `the keys that take arguments have placeholders`() {
-        listOf("dialog.attributes.title", "command.editAttributes", "command.insertSpeaker", "command.markAs")
+        listOf("dialog.attributes.title", "command.editAttributes", "command.insertSpeaker", "command.markAs", "language.nameEntry")
             .forEach { assertTrue(it, bundle.getString(it).contains("{0}")) }
         assertTrue(bundle.getString("popup.speaker.item").contains("{1}"))
     }

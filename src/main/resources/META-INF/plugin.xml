@@ -176,6 +176,10 @@
                     class="name.fabiusdieciscudi.booklatex.mark.MarkAsSuppressedAction"/>
             <action id="BookLaTeX.MarkAs.Alternate"
                     class="name.fabiusdieciscudi.booklatex.mark.MarkAsAlternateAction"/>
+
+            <group id="BookLaTeX.MarkAs.Languages"
+                   class="name.fabiusdieciscudi.booklatex.mark.MarkAsLanguageActionGroup"
+                   popup="true"/>
         </group>
 
         <action id="BookLaTeX.ReloadDialogueDefinitions"

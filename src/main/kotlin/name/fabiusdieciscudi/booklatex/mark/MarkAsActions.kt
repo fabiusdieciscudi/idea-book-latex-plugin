@@ -5,6 +5,7 @@
 
 package name.fabiusdieciscudi.booklatex.mark
 
+import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -16,6 +17,7 @@ import com.intellij.psi.PsiDocumentManager
 import name.fabiusdieciscudi.booklatex.BookLatexBundle
 import name.fabiusdieciscudi.booklatex.insert.isLatexEditor
 import name.fabiusdieciscudi.booklatex.markers.ALTERNATE_COMMAND_NAME
+import name.fabiusdieciscudi.booklatex.markers.Languages
 import name.fabiusdieciscudi.booklatex.markers.SUPPRESSED_COMMAND_NAME
 
 /**
@@ -45,8 +47,22 @@ class MarkAsMenuGroup : DefaultActionGroup() {
  * wrapped, bottom to top so that each insertion leaves the offsets above it
  * alone, all in one undoable command; afterwards each caret sits just past the
  * closing brace it added.
+ *
+ * The two kinds of entry are built two ways. Suppressed and Alternate are
+ * registered in plugin.xml, and take their text from the bundle by id; the
+ * languages are built by [MarkAsLanguageActionGroup], and are given theirs.
  */
-abstract class MarkAsAction(private val commandName: String) : AnAction() {
+open class MarkAsAction : AnAction {
+
+    private val commandName: String
+
+    protected constructor(commandName: String) : super() {
+        this.commandName = commandName
+    }
+
+    constructor(commandName: String, text: String) : super(text) {
+        this.commandName = commandName
+    }
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
@@ -102,3 +118,36 @@ class MarkAsSuppressedAction : MarkAsAction(SUPPRESSED_COMMAND_NAME)
 
 /** Mark As | Alternate: `\alternate{...}`, another version of a passage. */
 class MarkAsAlternateAction : MarkAsAction(ALTERNATE_COMMAND_NAME)
+
+/**
+ * Mark As | Language: two entries per language the book marks up, in
+ * alphabetical order of its name.
+ *
+ * *French* wraps the selection in the prose command, `\french{...}`, set in
+ * italics; *French name* in the name command, `\frenchname{...}`, left upright.
+ * The two sit side by side, so the choice between them is made where the
+ * language is chosen. The entries are generated from [Languages], so a new
+ * language is in the menu as soon as it is in the table.
+ *
+ * A popup of its own, declared so in plugin.xml: thirty entries would bury
+ * Suppressed and Alternate if they stood in the Mark As menu itself.
+ */
+class MarkAsLanguageActionGroup : ActionGroup() {
+
+    private val entries: Array<AnAction> by lazy {
+        Languages.ALL
+            .map { it to BookLatexBundle.message("language.${it.name}") }
+            .sortedBy { (_, name) -> name }
+            .flatMap { (language, name) ->
+                listOf(
+                    MarkAsAction(language.proseCommand, name),
+                    MarkAsAction(language.nameCommand, BookLatexBundle.message("language.nameEntry", name)),
+                )
+            }
+            .toTypedArray()
+    }
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
+    override fun getChildren(event: AnActionEvent?): Array<AnAction> = entries
+}

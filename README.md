@@ -210,6 +210,11 @@ Ligurian and Provençal have no two-letter ISO code; the three-letter code and
 the code of Occitan are used respectively. Gaelic is set as Irish by the
 preamble, and shows Irish's code.
 
+**Select a phrase**, right-click, and choose its language under *Mark As |
+Language* to wrap it in one of the two commands: *French* turns `du pain` into
+`\french{du pain}`, *French name* turns `Jean` into `\frenchname{Jean}`. The
+selection is checked as for [cuts and alternatives](#cuts-and-alternatives).
+
 ---
 
 ## Quotations and ellipses
