@@ -137,6 +137,17 @@ class MarkAsCommentAction : MarkAsAction(COMMENT_COMMAND_NAME) {
         SelectionWrap.lineBlockToWrap(text, start, end)
 }
 
+/**
+ * Mark As | Note: `\note{...}`, an aside kept in the manuscript. The book sets
+ * it as a block of its own, so, like a comment, it is only for a block of whole
+ * lines: the entry is disabled for a phrase within a line.
+ */
+class MarkAsNoteAction : MarkAsAction(MarkerSpecs.NOTE.commandName) {
+
+    override fun rangeToWrap(text: CharSequence, start: Int, end: Int): TextRange? =
+        SelectionWrap.lineBlockToWrap(text, start, end)
+}
+
 /** Mark As | Newspaper: `\newspapername{...}`, the name of a newspaper. */
 class MarkAsNewspaperAction : MarkAsAction(MarkerSpecs.NEWSPAPER_NAME.commandName)
 

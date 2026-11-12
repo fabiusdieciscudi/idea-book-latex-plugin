@@ -89,6 +89,9 @@ into a note. The entry works on a block of whole lines only, and is disabled
 for a phrase within a line; otherwise the selection is checked as for
 [cuts and alternatives](#cuts-and-alternatives).
 
+*Mark As | Note* does the same for `\note{...}`, the aside the book prints as a
+block of small red italics, and under the same rule: whole lines only.
+
 **Double-click the note** to open an editor for its text: a real LaTeX editor,
 with completion, several lines tall. Confirm and the note shows the new text.
 

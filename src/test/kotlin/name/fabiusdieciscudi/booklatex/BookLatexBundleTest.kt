@@ -44,6 +44,7 @@ class BookLatexBundleTest {
         "action.BookLaTeX.MarkAs.Suppressed.text",
         "action.BookLaTeX.MarkAs.Alternate.text",
         "action.BookLaTeX.MarkAs.Comment.text",
+        "action.BookLaTeX.MarkAs.Note.text",
         "action.BookLaTeX.MarkAs.Newspaper.text",
         "action.BookLaTeX.MarkAs.WorkOfArt.text",
         "action.BookLaTeX.MarkAs.Acronym.text",
