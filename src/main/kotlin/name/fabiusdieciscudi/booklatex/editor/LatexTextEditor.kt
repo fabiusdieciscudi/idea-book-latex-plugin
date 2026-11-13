@@ -11,11 +11,13 @@ import com.intellij.openapi.fileEditor.impl.text.PsiAwareTextEditorImpl
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import name.fabiusdieciscudi.booklatex.language.DocumentLanguageAction
 
 /**
- * The platform's text editor, plus five tab actions: the switch for the
+ * The platform's text editor, plus six tab actions: the switch for the
  * plugin's colour scheme, the master switch, the two buttons that make its font
- * larger and smaller, and last the gear that opens the plugin's settings.
+ * larger and smaller, the drop-down of the document's language, and last the
+ * gear that opens the plugin's settings.
  *
  * Those buttons in the top right of a Markdown editor come from
  * `getTabActions()`, a method of the FileEditor itself. There is no extension
@@ -34,6 +36,8 @@ class LatexTextEditor(
         ToggleSmartRenderingAction(),
         IncreaseFontSizeAction(),
         DecreaseFontSizeAction(),
+        // project and file: TextEditorImpl's own, protected.
+        DocumentLanguageAction(project, file),
         OpenSettingsAction(),
     )
 }

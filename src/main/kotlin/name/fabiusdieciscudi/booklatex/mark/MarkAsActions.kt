@@ -22,6 +22,7 @@ import name.fabiusdieciscudi.booklatex.markers.ALTERNATE_COMMAND_NAME
 import name.fabiusdieciscudi.booklatex.markers.Languages
 import name.fabiusdieciscudi.booklatex.markers.MarkerSpecs
 import name.fabiusdieciscudi.booklatex.markers.SUPPRESSED_COMMAND_NAME
+import name.fabiusdieciscudi.booklatex.markers.WrapSpecs
 
 /**
  * The Mark As submenu of the editor's context menu: shown in a LaTeX editor,
@@ -158,7 +159,7 @@ class MarkAsWorkOfArtAction : MarkAsAction(MarkerSpecs.WORK_OF_ART_NAME.commandN
 class MarkAsAcronymAction : MarkAsAction(MarkerSpecs.ACRONYM.commandName)
 
 /** Mark As | Straight Quotation: `\sq{...}`, a quotation in straight quotes. */
-class MarkAsStraightQuotationAction : MarkAsAction(MarkerSpecs.SINGLE_QUOTE.commandName)
+class MarkAsStraightQuotationAction : MarkAsAction(WrapSpecs.SINGLE_QUOTE.commandName)
 
 /**
  * Mark As | Language: two entries per language the book marks up, in

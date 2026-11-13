@@ -5,6 +5,7 @@
 
 package name.fabiusdieciscudi.booklatex
 
+import name.fabiusdieciscudi.booklatex.language.DocumentLanguage
 import name.fabiusdieciscudi.booklatex.markers.Languages
 import name.fabiusdieciscudi.booklatex.sound.SoundSpecs
 import org.junit.Assert.assertTrue
@@ -52,6 +53,7 @@ class BookLatexBundleTest {
         "action.smartRendering.description",
         "action.colorScheme.text",
         "action.colorScheme.description",
+        "action.documentLanguage.description",
         "action.openSettings.text",
         "action.openSettings.description",
         "action.increaseFontSize.text",
@@ -82,6 +84,12 @@ class BookLatexBundleTest {
     @Test
     fun `every language has a name for the Mark As menu`() {
         val missing = Languages.ALL.map { "language.${it.name}" }.filterNot { bundle.containsKey(it) }
+        assertTrue("missing keys: $missing", missing.isEmpty())
+    }
+
+    @Test
+    fun `every document language has a name`() {
+        val missing = DocumentLanguage.entries.map { it.bundleKey }.filterNot { bundle.containsKey(it) }
         assertTrue("missing keys: $missing", missing.isEmpty())
     }
 

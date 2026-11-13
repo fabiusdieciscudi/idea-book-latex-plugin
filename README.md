@@ -77,6 +77,13 @@ lasts and applies to every LaTeX editor; the renderings follow it. The
 magnifiers are disabled while the plugin's colour scheme is turned off, since
 that size belongs to it.
 
+Before the gear, a drop-down shows the **language of the document** — Italian,
+French or English, the languages the preamble's `language` option accepts — and
+chooses another. Every `.tex` file has one: Italian, the preamble's default,
+until another is chosen. The choice is kept per file in `.idea/booklatex.xml`,
+so it travels with the project under version control, and it follows the file
+when it is renamed or moved.
+
 Last, a gear opens the plugin's page in the settings, *Settings | Tools |
 Book LaTeX*.
 
