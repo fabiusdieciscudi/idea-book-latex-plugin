@@ -185,7 +185,7 @@ contents.
 
 | Option | For | In the dialog |
 | --- | --- | --- |
-| the sound | both | its name, required, with the names already used in the project to choose from |
+| the sound | both | its name, required, chosen from the sound library |
 | off | `\ambient` | *Stop the background sound*, which disables everything else |
 | loudness | both | dB, between −60 and +20 |
 | fade | both | seconds, between 0 and 60 |
@@ -202,6 +202,23 @@ one line, options in the order above and by their full names: `l=-3` becomes
 
 *Insert | Ambient Sound…* and *Insert | Sound Effect…* open the same dialog,
 empty, and insert the command at the caret.
+
+The names the dialog offers come from the **sound library**, a file named in
+*Settings | Tools | Book LaTeX*. Its picker opens on the root of the project, and
+the path is kept relative to it, so the same setting finds the library in every
+manuscript laid out alike. One sound per line, its name before the first colon,
+spaces allowed; a `#` starts a comment to the end of the line:
+
+```
+# Backgrounds
+pioggia: rain_loop.wav
+vento forte: wind_02.wav   # a name with a space
+```
+
+The same list serves `\ambient` and `\sfx`, and it is closed: a sound is chosen
+from it, not typed. It is read each time the dialog opens, so an edit to the
+file shows at once. A command whose sound has since left the library keeps it,
+at the top of the list, with a warning.
 
 ---
 

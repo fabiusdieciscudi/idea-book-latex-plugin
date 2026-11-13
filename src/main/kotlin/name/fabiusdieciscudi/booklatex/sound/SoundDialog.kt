@@ -22,9 +22,12 @@ import javax.swing.JPanel
 /**
  * The options of an `\ambient` or an `\sfx`, one widget each.
  *
- *  - The name: free text, offering the names the manuscript already uses. It is
- *    required -- the preamble refuses a sound without one -- and cannot hold the
- *    characters that would break the command around it.
+ *  - The name: a closed list, the names of the sound library named in the
+ *    settings (see [SoundLibrary]); a sound BookAssistant does not have would
+ *    only fail later, in the audio book. It is required -- the preamble refuses
+ *    a sound without one. A command whose name has since left the library keeps
+ *    it, at the top of the list, with a warning; and a library name that would
+ *    break the command around it is refused.
  *  - For `\ambient`, a box that stops the background instead, writing
  *    `\ambient{off}`; ticked, it disables everything else.
  *  - A number: a text field with its unit beside it, checked as it is typed
@@ -44,9 +47,17 @@ class SoundDialog(
 
     private val stopped = initial.isStop(spec)
 
-    private val nameField = ComboBox(knownNames.toTypedArray()).apply {
-        isEditable = true
-        selectedItem = if (stopped) "" else initial.name
+    private val libraryNames = knownNames
+
+    private val currentName = if (stopped) "" else initial.name.trim()
+
+    private val nameField = ComboBox(
+        (if (currentName.isNotEmpty() && currentName !in libraryNames) listOf(currentName) + libraryNames else libraryNames)
+            .toTypedArray(),
+    ).apply {
+        isEditable = false
+        // A new command starts with nothing chosen, rather than with the first sound.
+        selectedItem = currentName.ifEmpty { null }
     }
 
     private val stopBox: JBCheckBox? = spec.stopName?.let {
@@ -102,9 +113,15 @@ class SoundDialog(
         val problems = mutableListOf<ValidationInfo>()
         val name = nameText()
         when {
+            name.isEmpty() && libraryNames.isEmpty() ->
+                problems += ValidationInfo(BookLatexBundle.message("dialog.sound.noLibrary"), nameField)
             name.isEmpty() -> problems += ValidationInfo(BookLatexBundle.message("dialog.sound.nameRequired"), nameField)
             name.any { it in FORBIDDEN_IN_NAME } ->
                 problems += ValidationInfo(BookLatexBundle.message("dialog.sound.nameInvalid"), nameField)
+            name !in libraryNames ->
+                problems += ValidationInfo(BookLatexBundle.message("dialog.sound.notInLibrary"), nameField)
+                    .asWarning()
+                    .withOKEnabled()
         }
 
         numberFields.forEach { (parameter, field) ->
@@ -137,7 +154,7 @@ class SoundDialog(
 
     private fun isStopped(): Boolean = stopBox?.isSelected == true
 
-    private fun nameText(): String = nameField.editor.item?.toString().orEmpty().trim()
+    private fun nameText(): String = (nameField.selectedItem as? String).orEmpty().trim()
 
     private fun updateEnabled() {
         val enabled = !isStopped()

@@ -6,13 +6,21 @@
 package name.fabiusdieciscudi.booklatex.settings
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.ui.TextBrowseFolderListener
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.JBIntSpinner
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.FormBuilder
 import name.fabiusdieciscudi.booklatex.BookLatexBundle
+import name.fabiusdieciscudi.booklatex.sound.SoundLibrary
 import name.fabiusdieciscudi.booklatex.ui.LatexEditorColorScheme
 import name.fabiusdieciscudi.booklatex.ui.RenderFonts
 import javax.swing.DefaultComboBoxModel
@@ -20,7 +28,14 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 /** Settings | Tools | Book LaTeX */
-class BookLatexConfigurable : Configurable {
+/**
+ * *Settings | Tools | Book LaTeX*.
+ *
+ * Registered for each project, though every preference here is the IDE's: the
+ * sound library is named relative to the project's root, and the page needs the
+ * project to know where that is.
+ */
+class BookLatexConfigurable(private val project: Project) : Configurable {
 
     private val enabled = JBCheckBox(BookLatexBundle.message("settings.colorScheme.enabled"))
     private val schemeName = ComboBox<String>()
@@ -28,6 +43,9 @@ class BookLatexConfigurable : Configurable {
     private val editorFontSize = JBIntSpinner(LatexEditorColorScheme.DEFAULT_FONT_SIZE, MIN_FONT_SIZE, MAX_FONT_SIZE)
     private val fontFamily = ComboBox<String>()
     private val apostrophes = JBCheckBox(BookLatexBundle.message("settings.apostrophes.label"))
+    private val soundLibrary = TextFieldWithBrowseButton().apply {
+        addBrowseFolderListener(SoundLibraryBrowseListener(project))
+    }
 
     private val settings get() = BookLatexRenderingSettings.getInstance()
 
@@ -50,6 +68,9 @@ class BookLatexConfigurable : Configurable {
             .addLabeledComponent(BookLatexBundle.message("settings.renderFont.label"), fontFamily)
             .addSeparator()
             .addComponent(apostrophes)
+            .addSeparator()
+            .addLabeledComponent(BookLatexBundle.message("settings.soundLibrary.label"), soundLibrary)
+            .addTooltip(BookLatexBundle.message("settings.soundLibrary.comment"))
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -60,7 +81,8 @@ class BookLatexConfigurable : Configurable {
             editorFontFamily.selectedItem != settings.editorFontFamily ||
             editorFontSize.number != settings.editorFontSize ||
             fontFamily.selectedItem != settings.renderFontFamily ||
-            apostrophes.isSelected != settings.normalizeApostrophes
+            apostrophes.isSelected != settings.normalizeApostrophes ||
+            storedSoundLibrary() != settings.soundLibraryPath
 
     override fun apply() {
         settings.latexColorScheme = enabled.isSelected
@@ -69,6 +91,7 @@ class BookLatexConfigurable : Configurable {
         settings.editorFontSize = editorFontSize.number
         (fontFamily.selectedItem as? String)?.let { settings.renderFontFamily = it }
         settings.normalizeApostrophes = apostrophes.isSelected
+        settings.soundLibraryPath = storedSoundLibrary()
 
         LatexEditorColorScheme.applyToOpenEditors()
         // The blocks are painted, and their width was measured with the old
@@ -85,6 +108,7 @@ class BookLatexConfigurable : Configurable {
         fill(fontFamily, RenderFonts.availableFamilies(), settings.renderFontFamily)
         editorFontSize.value = settings.editorFontSize
         apostrophes.isSelected = settings.normalizeApostrophes
+        soundLibrary.text = settings.soundLibraryPath
 
         enabled.isSelected = settings.latexColorScheme
         schemeName.isEnabled = enabled.isSelected
@@ -100,6 +124,9 @@ class BookLatexConfigurable : Configurable {
         combo.selectedItem = current
     }
 
+    /** The library as it is stored: relative to the root of the project, however it was typed. */
+    private fun storedSoundLibrary(): String = SoundLibrary.relativize(soundLibrary.text, project.basePath)
+
     companion object {
         // Wide enough for a page-sized face and then some; the editor clamps
         // anything odder than this on its own. The buttons beside the master
@@ -107,4 +134,21 @@ class BookLatexConfigurable : Configurable {
         const val MIN_FONT_SIZE = 6
         const val MAX_FONT_SIZE = 96
     }
+}
+
+/**
+ * The picker of the sound library: it opens on the library already chosen, or
+ * else on the project's root, and writes back the path relative to that root.
+ */
+private class SoundLibraryBrowseListener(private val project: Project) :
+    TextBrowseFolderListener(FileChooserDescriptorFactory.singleFile(), project) {
+
+    override fun getInitialFile(): VirtualFile? {
+        val current = SoundLibrary.resolve(componentText, project.basePath)
+            ?.let { LocalFileSystem.getInstance().findFileByNioFile(it) }
+        return current ?: project.guessProjectDir()
+    }
+
+    override fun chosenFileToResultingText(chosenFile: VirtualFile): String =
+        SoundLibrary.relativize(chosenFile.path, project.basePath)
 }

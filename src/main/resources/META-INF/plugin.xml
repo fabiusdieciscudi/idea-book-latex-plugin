@@ -127,7 +127,7 @@
         <editorFactoryListener
             implementation="name.fabiusdieciscudi.booklatex.ui.LatexColorSchemeListener"/>
 
-        <applicationConfigurable
+        <projectConfigurable
             parentId="tools"
             id="name.fabiusdieciscudi.booklatex.settings"
             bundle="messages.BookLatexBundle"

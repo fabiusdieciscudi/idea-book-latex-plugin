@@ -32,6 +32,7 @@ class BookLatexRenderingSettings :
         var editorFontSize: Int by property(LatexEditorColorScheme.DEFAULT_FONT_SIZE)
         var renderFontFamily: String? by string(RenderFonts.DEFAULT_FAMILY)
         var normalizeApostrophes: Boolean by property(true)
+        var soundLibraryPath: String? by string("")
     }
 
     var smartRendering: Boolean
@@ -95,6 +96,17 @@ class BookLatexRenderingSettings :
         get() = state.normalizeApostrophes
         set(value) {
             state.normalizeApostrophes = value
+        }
+
+    /**
+     * The file that lists the sounds of BookAssistant's library, as typed in
+     * Settings: absolute, `~/`-relative, or relative to the project's root. See
+     * [name.fabiusdieciscudi.booklatex.sound.SoundLibrary].
+     */
+    var soundLibraryPath: String
+        get() = state.soundLibraryPath.orEmpty()
+        set(value) {
+            state.soundLibraryPath = value
         }
 
     companion object {

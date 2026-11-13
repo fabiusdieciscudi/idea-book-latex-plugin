@@ -39,7 +39,7 @@ private fun editSound(editor: Editor, which: (LatexCommands) -> Boolean) {
     val spec = SoundSpecs.forCommand(command.name) ?: return
     val initial = SoundCommands.read(command, spec) ?: return
 
-    val dialog = SoundDialog(project, spec, initial, SoundCommands.namesUsed(project, spec, psiFile))
+    val dialog = SoundDialog(project, spec, initial, SoundCommands.libraryNames(project))
     if (!dialog.showAndGet()) return
 
     val text = SoundArguments.render(spec, dialog.settings())
@@ -88,7 +88,7 @@ abstract class InsertSoundAction(private val spec: SoundSpec) : AnAction() {
         val psiFile = event.getData(CommonDataKeys.PSI_FILE) ?: return
         val document = editor.document
 
-        val dialog = SoundDialog(project, spec, SoundSettings.empty(), SoundCommands.namesUsed(project, spec, psiFile))
+        val dialog = SoundDialog(project, spec, SoundSettings.empty(), SoundCommands.libraryNames(project))
         if (!dialog.showAndGet()) return
         val text = SoundArguments.render(spec, dialog.settings())
 

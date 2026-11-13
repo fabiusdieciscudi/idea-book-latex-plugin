@@ -5,15 +5,14 @@
 
 package name.fabiusdieciscudi.booklatex.sound
 
-import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.project.IndexNotReadyException
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
-import com.intellij.psi.search.FilenameIndex
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
+import name.fabiusdieciscudi.booklatex.settings.BookLatexRenderingSettings
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import java.io.IOException
+import java.nio.file.Files
 
 /** Where the PSI meets [SoundArguments]: finding sound commands, and reading them. */
 object SoundCommands {
@@ -32,28 +31,20 @@ object SoundCommands {
     }
 
     /**
-     * The names already given to [spec]'s command anywhere in the project, for the
-     * dialog to offer. The plugin cannot see BookAssistant's library; the
-     * manuscript is the next best thing. While the project is being indexed only
-     * [current] is looked at.
+     * The names of the sounds in the library file of the settings, for the
+     * dialog to offer: the same list for `\ambient` and `\sfx`, since both draw
+     * on BookAssistant's one library. Read afresh each time, so an edit to the
+     * file shows the next time the dialog opens. No library, or one that cannot
+     * be read, offers nothing, and the name is typed by hand.
      */
-    fun namesUsed(project: Project, spec: SoundSpec, current: PsiFile): List<String> =
-        ReadAction.compute<List<String>, RuntimeException> {
-            val files = try {
-                FilenameIndex.getAllFilesByExt(project, TEX_EXTENSION, GlobalSearchScope.projectScope(project))
-                    .mapNotNull { PsiManager.getInstance(project).findFile(it) }
-            } catch (e: IndexNotReadyException) {
-                emptyList()
-            }
-
-            (files + current).distinct()
-                .flatMap { file -> PsiTreeUtil.findChildrenOfType(file, LatexCommands::class.java) }
-                .filter { it.name == spec.commandName }
-                .mapNotNull { it.requiredParameterText(0)?.trim() }
-                .filter { it.isNotEmpty() && it != spec.stopName }
-                .distinct()
-                .sorted()
+    fun libraryNames(project: Project): List<String> {
+        val setting = BookLatexRenderingSettings.getInstance().soundLibraryPath
+        val path = SoundLibrary.resolve(setting, project.basePath) ?: return emptyList()
+        return try {
+            SoundLibrary.parse(Files.readString(path))
+        } catch (e: IOException) {
+            thisLogger().warn("BookLaTeX: cannot read the sound library at $path", e)
+            emptyList()
         }
-
-    private const val TEX_EXTENSION = "tex"
+    }
 }
