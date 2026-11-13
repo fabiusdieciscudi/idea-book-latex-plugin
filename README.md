@@ -67,7 +67,11 @@ It is a single setting for the whole IDE, not one per file. It requires the New
 UI with editor tabs visible; the platform draws that strip nowhere else.
 
 Beside it, a gear opens the plugin's page in the settings, *Settings | Tools |
-Book LaTeX*.
+Book LaTeX*, and two magnifiers make the font of the LaTeX editors a point
+larger or smaller. That is the *Editor font size* of the settings page, so the
+change lasts and applies to every LaTeX editor; the renderings follow it. The
+magnifiers are disabled while the plugin's colour scheme is turned off, since
+that size belongs to it.
 
 While the project is being indexed some renderings do not appear yet. They show
 up on their own when indexing ends.

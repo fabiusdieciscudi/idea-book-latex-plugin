@@ -13,8 +13,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 
 /**
- * The platform's text editor, plus two tab actions: the master switch, and
- * the gear that opens the plugin's settings.
+ * The platform's text editor, plus four tab actions: the master switch, the
+ * gear that opens the plugin's settings, and the two buttons that make its font
+ * larger and smaller.
  *
  * Those buttons in the top right of a Markdown editor come from
  * `getTabActions()`, a method of the FileEditor itself. There is no extension
@@ -28,5 +29,10 @@ class LatexTextEditor(
     provider: TextEditorProvider,
 ) : PsiAwareTextEditorImpl(project, file, provider) {
 
-    override fun getTabActions(): ActionGroup = DefaultActionGroup(ToggleSmartRenderingAction(), OpenSettingsAction())
+    override fun getTabActions(): ActionGroup = DefaultActionGroup(
+        ToggleSmartRenderingAction(),
+        OpenSettingsAction(),
+        IncreaseFontSizeAction(),
+        DecreaseFontSizeAction(),
+    )
 }

@@ -100,9 +100,10 @@ class BookLatexConfigurable : Configurable {
         combo.selectedItem = current
     }
 
-    private companion object {
+    companion object {
         // Wide enough for a page-sized face and then some; the editor clamps
-        // anything odder than this on its own.
+        // anything odder than this on its own. The buttons beside the master
+        // switch keep to the same range.
         const val MIN_FONT_SIZE = 6
         const val MAX_FONT_SIZE = 96
     }
