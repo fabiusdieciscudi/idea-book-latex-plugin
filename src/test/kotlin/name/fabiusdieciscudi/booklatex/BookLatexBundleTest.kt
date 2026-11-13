@@ -46,6 +46,8 @@ class BookLatexBundleTest {
         "progress.scanDefinitions",
         "action.smartRendering.text",
         "action.smartRendering.description",
+        "action.openSettings.text",
+        "action.openSettings.description",
         "action.BookLaTeX.ReloadDialogueDefinitions.text",
         "action.BookLaTeX.ReloadDialogueDefinitions.description",
         "group.BookLaTeX.MarkAs.text",

@@ -66,6 +66,9 @@ leaving the plain source. Click it again and it comes back.
 It is a single setting for the whole IDE, not one per file. It requires the New
 UI with editor tabs visible; the platform draws that strip nowhere else.
 
+Beside it, a gear opens the plugin's page in the settings, *Settings | Tools |
+Book LaTeX*.
+
 While the project is being indexed some renderings do not appear yet. They show
 up on their own when indexing ends.
 
