@@ -376,6 +376,14 @@ cuts a command name in two, holds an unmatched brace, or separates a command
 from its arguments — leaves the two entries disabled. With several carets,
 every selection is wrapped at once, and a single undo takes them all back.
 
+**Unmark As** does the opposite, from the caret rather than from a selection:
+with nothing selected, it lists the commands of *Mark As* the caret is inside,
+innermost first, and the one chosen goes, leaving what it held. In
+`\newspapername{\englishname{FOO}}`, with the caret in `FOO`, it offers
+*English name* and then *Newspaper*. A command that owned its lines takes away
+the `%` saving put after it, which would otherwise join the text to the next
+line.
+
 ---
 
 ## Saving

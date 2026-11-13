@@ -6,6 +6,7 @@
 package name.fabiusdieciscudi.booklatex
 
 import name.fabiusdieciscudi.booklatex.language.DocumentLanguage
+import name.fabiusdieciscudi.booklatex.mark.MarkableCommands
 import name.fabiusdieciscudi.booklatex.markers.Languages
 import name.fabiusdieciscudi.booklatex.sound.SoundSpecs
 import org.junit.Assert.assertTrue
@@ -34,6 +35,8 @@ class BookLatexBundleTest {
         "command.editAttributes",
         "command.insertSpeaker",
         "command.markAs",
+        "command.unmarkAs",
+        "group.BookLaTeX.UnmarkAs.text",
         "command.editSound",
         "dialog.sound.name",
         "dialog.sound.stop",
@@ -88,6 +91,12 @@ class BookLatexBundleTest {
     }
 
     @Test
+    fun `every command Unmark As knows has a label`() {
+        val missing = MarkableCommands.ALL.flatMap { listOfNotNull(it.labelKey, it.nameKey) }.filterNot { bundle.containsKey(it) }
+        assertTrue("missing keys: $missing", missing.isEmpty())
+    }
+
+    @Test
     fun `every document language has a name`() {
         val missing = DocumentLanguage.entries.map { it.bundleKey }.filterNot { bundle.containsKey(it) }
         assertTrue("missing keys: $missing", missing.isEmpty())
@@ -104,7 +113,7 @@ class BookLatexBundleTest {
 
     @Test
     fun `the keys that take arguments have placeholders`() {
-        listOf("dialog.attributes.title", "command.editAttributes", "command.insertSpeaker", "command.markAs", "language.nameEntry", "command.editSound")
+        listOf("dialog.attributes.title", "command.editAttributes", "command.insertSpeaker", "command.markAs", "language.nameEntry", "command.editSound", "command.unmarkAs")
             .forEach { assertTrue(it, bundle.getString(it).contains("{0}")) }
         assertTrue(bundle.getString("popup.speaker.item").contains("{1}"))
     }

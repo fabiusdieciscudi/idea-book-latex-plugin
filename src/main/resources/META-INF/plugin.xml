@@ -204,6 +204,12 @@
                    popup="true"/>
         </group>
 
+        <group id="BookLaTeX.UnmarkAs"
+               class="name.fabiusdieciscudi.booklatex.mark.UnmarkAsMenuGroup"
+               popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="BookLaTeX.MarkAs"/>
+        </group>
+
         <action id="BookLaTeX.ReloadDialogueDefinitions"
                 class="name.fabiusdieciscudi.booklatex.dialogue.ReloadDialogueDefinitionsAction">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
