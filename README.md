@@ -66,7 +66,12 @@ leaving the plain source. Click it again and it comes back.
 It is a single setting for the whole IDE, not one per file. It requires the New
 UI with editor tabs visible; the platform draws that strip nowhere else.
 
-Beside it, a gear opens the plugin's page in the settings, *Settings | Tools |
+To its left, a second switch, with a book for an icon, turns the plugin's colour
+scheme on and off — the white page, the editor font and its size — in every
+LaTeX editor at once. It is the *Use a dedicated colour scheme* of the settings
+page, and leaves the renderings to the first switch.
+
+Then a gear opens the plugin's page in the settings, *Settings | Tools |
 Book LaTeX*, and two magnifiers make the font of the LaTeX editors a point
 larger or smaller. That is the *Editor font size* of the settings page, so the
 change lasts and applies to every LaTeX editor; the renderings follow it. The

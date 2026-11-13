@@ -50,6 +50,8 @@ class BookLatexBundleTest {
         "progress.scanDefinitions",
         "action.smartRendering.text",
         "action.smartRendering.description",
+        "action.colorScheme.text",
+        "action.colorScheme.description",
         "action.openSettings.text",
         "action.openSettings.description",
         "action.increaseFontSize.text",
