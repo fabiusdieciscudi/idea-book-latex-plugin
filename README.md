@@ -328,6 +328,10 @@ All three are under *Mark As*, as *Newspaper*, *Work of Art* and *Acronym*.
 `\sq{testo}` is shown as `“testo”`. The quotes replace the command and its
 braces; the text between them is yours to edit.
 
+**Select a quotation**, right-click, and choose *Mark As | Straight Quotation* to
+wrap it in `\sq`. The selection is checked as for
+[cuts and alternatives](#cuts-and-alternatives).
+
 `\ellipsis` is shown as `…`.
 
 **Type three dots** and they become `\ellipsis`, which is immediately drawn as a

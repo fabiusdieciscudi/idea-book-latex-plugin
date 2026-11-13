@@ -196,6 +196,8 @@
                     class="name.fabiusdieciscudi.booklatex.mark.MarkAsWorkOfArtAction"/>
             <action id="BookLaTeX.MarkAs.Acronym"
                     class="name.fabiusdieciscudi.booklatex.mark.MarkAsAcronymAction"/>
+            <action id="BookLaTeX.MarkAs.StraightQuotation"
+                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsStraightQuotationAction"/>
 
             <group id="BookLaTeX.MarkAs.Languages"
                    class="name.fabiusdieciscudi.booklatex.mark.MarkAsLanguageActionGroup"

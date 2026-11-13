@@ -157,6 +157,9 @@ class MarkAsWorkOfArtAction : MarkAsAction(MarkerSpecs.WORK_OF_ART_NAME.commandN
 /** Mark As | Acronym: `\acronym{...}`, set in small capitals in the book. */
 class MarkAsAcronymAction : MarkAsAction(MarkerSpecs.ACRONYM.commandName)
 
+/** Mark As | Straight Quotation: `\sq{...}`, a quotation in straight quotes. */
+class MarkAsStraightQuotationAction : MarkAsAction(MarkerSpecs.SINGLE_QUOTE.commandName)
+
 /**
  * Mark As | Language: two entries per language the book marks up, in
  * alphabetical order of its name.
