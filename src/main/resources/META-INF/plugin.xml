@@ -96,6 +96,9 @@
         <highlightingPassFactory
             implementation="name.fabiusdieciscudi.booklatex.markers.MarkerFoldPassFactory"/>
 
+        <highlightingPassFactory
+            implementation="name.fabiusdieciscudi.booklatex.sound.SoundRenderPassFactory"/>
+
         <annotator
             language="Latex"
             implementationClass="name.fabiusdieciscudi.booklatex.markers.ForeignProseItalicAnnotator"/>
@@ -151,6 +154,13 @@
                     class="name.fabiusdieciscudi.booklatex.insert.InsertBeatAction"/>
             <action id="BookLaTeX.Insert.Shot"
                     class="name.fabiusdieciscudi.booklatex.insert.InsertShotAction"/>
+
+            <separator/>
+
+            <action id="BookLaTeX.Insert.Ambient"
+                    class="name.fabiusdieciscudi.booklatex.sound.InsertAmbientAction"/>
+            <action id="BookLaTeX.Insert.Sfx"
+                    class="name.fabiusdieciscudi.booklatex.sound.InsertSfxAction"/>
 
             <separator/>
 

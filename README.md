@@ -155,6 +155,49 @@ Like comments, these are only rendered when they own their lines.
 
 ---
 
+## Sounds
+
+`\ambient` and `\sfx` carry the sounds of the audio book: a background, and an
+effect. The book in print shows nothing of them; BookAssistant reads them.
+
+```latex
+\ambient[loudness=-6, fade=3]{pioggia}%
+Il cielo si oscurò \sfx[overlay, loudness=-3]{tuono} e cominciò a piovere.
+```
+
+A command on lines of its own is drawn as a strip with rounded corners, dark
+teal for a background and light green for an effect: **AMBIENT** `pioggia`
+**LOUDNESS** `-6 dB` **FADE** `3 s`. The strip is as wide as what it says,
+centred on the line, and thinner than it. Only the options that have a value
+are shown, with their units. `\ambient{off}`, which stops the background, reads
+as **AMBIENT** `stop`.
+An `\sfx` inside a sentence is drawn as a pill in its place, with the same
+contents.
+
+**Double-click the strip or the pill** to edit the command:
+
+| Option | For | In the dialog |
+| --- | --- | --- |
+| the sound | both | its name, required, with the names already used in the project to choose from |
+| off | `\ambient` | *Stop the background sound*, which disables everything else |
+| loudness | both | dB, between −60 and +20 |
+| fade | both | seconds, between 0 and 60 |
+| repeat | `\ambient` | a check box, on by default |
+| overlay | `\sfx` | a check box, off by default |
+| skip, cut, duration | both | seconds, between 0 and 3600 |
+| delay | both | seconds, between 0 and 600 |
+
+Numbers take a dot for decimals, whatever the language of the IDE, because
+that is what TeX reads; an empty field leaves the option out. Options the
+dialog does not know are kept. On confirmation the command is written again on
+one line, options in the order above and by their full names: `l=-3` becomes
+`loudness=-3`.
+
+*Insert | Ambient Sound…* and *Insert | Sound Effect…* open the same dialog,
+empty, and insert the command at the caret.
+
+---
+
 ## Dialogue
 
 The book defines one command per speaker, in the preamble:
@@ -294,6 +337,11 @@ are removed.
 
 A command with real text after it on the same line is never touched, and neither
 is a line that already ends in a comment.
+
+Sounds have rules of their own. An `\sfx` gets its `%` whenever nothing but
+spaces follows it on its line, whatever precedes it. An `\ambient` always gets
+one, because nothing may follow it on its line: if something does, it is moved
+to the next line, after the `%`.
 
 This is the only thing the plugin writes to your files without being asked.
 Commit before the first save on an existing manuscript, and read the diff.

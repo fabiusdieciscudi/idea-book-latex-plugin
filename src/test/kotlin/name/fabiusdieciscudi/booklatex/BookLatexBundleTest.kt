@@ -6,6 +6,7 @@
 package name.fabiusdieciscudi.booklatex
 
 import name.fabiusdieciscudi.booklatex.markers.Languages
+import name.fabiusdieciscudi.booklatex.sound.SoundSpecs
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.ResourceBundle
@@ -30,6 +31,15 @@ class BookLatexBundleTest {
         "command.editAttributes",
         "command.insertSpeaker",
         "command.markAs",
+        "command.editSound",
+        "dialog.sound.name",
+        "dialog.sound.stop",
+        "dialog.sound.range",
+        "dialog.sound.nameRequired",
+        "dialog.sound.nameInvalid",
+        "dialog.sound.notANumber",
+        "action.BookLaTeX.Insert.Ambient.text",
+        "action.BookLaTeX.Insert.Sfx.text",
         "popup.speaker.title",
         "popup.speaker.item",
         "popup.speaker.literal",
@@ -63,8 +73,17 @@ class BookLatexBundleTest {
     }
 
     @Test
+    fun `every sound has a title and every option a label`() {
+        val keys = SoundSpecs.ALL.flatMap { spec ->
+            listOf("dialog.sound.title.${spec.title.lowercase()}") + spec.parameters.map { "dialog.sound.${it.key}" }
+        }
+        val missing = keys.filterNot { bundle.containsKey(it) }
+        assertTrue("missing keys: $missing", missing.isEmpty())
+    }
+
+    @Test
     fun `the keys that take arguments have placeholders`() {
-        listOf("dialog.attributes.title", "command.editAttributes", "command.insertSpeaker", "command.markAs", "language.nameEntry")
+        listOf("dialog.attributes.title", "command.editAttributes", "command.insertSpeaker", "command.markAs", "language.nameEntry", "command.editSound")
             .forEach { assertTrue(it, bundle.getString(it).contains("{0}")) }
         assertTrue(bundle.getString("popup.speaker.item").contains("{1}"))
     }

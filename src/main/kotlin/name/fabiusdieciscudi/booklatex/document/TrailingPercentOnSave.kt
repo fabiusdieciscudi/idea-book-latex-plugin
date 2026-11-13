@@ -12,6 +12,11 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileDocumentManagerListener
 import com.intellij.openapi.project.ProjectLocator
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiFile
+import name.fabiusdieciscudi.booklatex.sound.SoundCommands
+import name.fabiusdieciscudi.booklatex.sound.SoundPercent
+import name.fabiusdieciscudi.booklatex.sound.SoundSpecs
+import name.fabiusdieciscudi.booklatex.sound.SoundTextEdit
 
 /**
  * Appends the missing `%` to every rendered command when the file is saved.
@@ -37,17 +42,32 @@ class TrailingPercentOnSave : FileDocumentManagerListener {
         val psiFile = psiDocumentManager.getPsiFile(document) ?: return
         if (psiFile.language.id != LATEX_LANGUAGE_ID) return
 
-        val ranges = collectMissingPercents(document, psiFile)
-        if (ranges.isEmpty()) return
+        val edits = collectMissingPercents(document, psiFile).map { SoundTextEdit(it.startOffset, it.endOffset, PERCENT) } +
+            soundPercents(document, psiFile)
+        if (edits.isEmpty()) return
 
         CommandProcessor.getInstance().runUndoTransparentAction {
             ApplicationManager.getApplication().runWriteAction {
-                ranges.sortedByDescending { it.startOffset }.forEach { range ->
-                    document.replaceString(range.startOffset, range.endOffset, PERCENT)
+                edits.sortedByDescending { it.start }.forEach { edit ->
+                    document.replaceString(edit.start, edit.end, edit.replacement)
                 }
             }
         }
     }
+
+    /**
+     * `\ambient` and `\sfx` follow rules of their own: see [SoundPercent]. A command
+     * still without its `{name}` is being typed, and is left alone -- otherwise an
+     * `\ambient` half-written in the middle of a line would break it in two.
+     */
+    private fun soundPercents(document: Document, psiFile: PsiFile): List<SoundTextEdit> =
+        SoundCommands.all(psiFile).mapNotNull { command ->
+            val spec = SoundSpecs.forCommand(command.name) ?: return@mapNotNull null
+            SoundCommands.read(command, spec) ?: return@mapNotNull null
+            val range = command.textRange
+            if (range.endOffset > document.textLength) return@mapNotNull null
+            SoundPercent.edit(document.charsSequence, range.startOffset, range.endOffset, spec)
+        }
 
     private companion object {
         const val LATEX_LANGUAGE_ID = "Latex"

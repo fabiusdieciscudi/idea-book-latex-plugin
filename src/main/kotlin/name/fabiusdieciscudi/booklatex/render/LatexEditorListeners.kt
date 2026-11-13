@@ -16,6 +16,10 @@ import com.intellij.openapi.editor.event.VisibleAreaEvent
 import com.intellij.openapi.editor.event.VisibleAreaListener
 import name.fabiusdieciscudi.booklatex.attributes.editAttributes
 import name.fabiusdieciscudi.booklatex.comment.editComment
+import name.fabiusdieciscudi.booklatex.sound.SoundPillRenderer
+import name.fabiusdieciscudi.booklatex.sound.SoundStripRenderer
+import name.fabiusdieciscudi.booklatex.sound.editSoundEndingAt
+import name.fabiusdieciscudi.booklatex.sound.editSoundWithin
 
 /** Attaches the click handling, and the re-measuring on resize, to every editor that opens. */
 class LatexEditorListener : EditorFactoryListener {
@@ -56,15 +60,24 @@ private class RenderedWidthListener(private val editor: Editor) : VisibleAreaLis
     }
 
     private fun CustomFoldRegion.isWidthDependent(): Boolean =
-        renderer is CommentFoldRenderer || renderer is AttributeStripRenderer || renderer is HorizontalRuleRenderer
+        renderer is CommentFoldRenderer || renderer is AttributeStripRenderer || renderer is HorizontalRuleRenderer ||
+            renderer is SoundStripRenderer
 }
 
-/** A double click on any rendered region opens its editing dialog. */
+/** A double click on any rendered region, or on a sound's pill, opens its editing dialog. */
 private class LatexFoldClickListener : EditorMouseListener {
 
     override fun mouseClicked(event: EditorMouseEvent) {
         if (event.area != EditorMouseEventArea.EDITING_AREA) return
         if (event.mouseEvent.clickCount != 2) return
+
+        // A pill is an inlay, not a region: it sits just past the command it draws.
+        val inlay = event.inlay
+        if (inlay != null && inlay.isValid && inlay.renderer is SoundPillRenderer) {
+            event.consume()
+            editSoundEndingAt(event.editor, inlay.offset)
+            return
+        }
 
         val region = event.collapsedFoldRegion as? CustomFoldRegion ?: return
         if (!region.isValid) return
@@ -78,6 +91,11 @@ private class LatexFoldClickListener : EditorMouseListener {
             is AttributeStripRenderer -> {
                 event.consume()
                 editAttributes(event.editor, region.startOffset, region.endOffset)
+            }
+
+            is SoundStripRenderer -> {
+                event.consume()
+                editSoundWithin(event.editor, region.startOffset, region.endOffset)
             }
         }
     }
