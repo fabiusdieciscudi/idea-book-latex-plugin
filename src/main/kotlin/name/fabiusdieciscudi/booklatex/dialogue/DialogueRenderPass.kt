@@ -22,7 +22,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
  * Renders `\sjm{Sono appena arrivato.}` as `Jacques: «Sono appena arrivato.»`
- * without painting anything.
+ * without painting anything. An optional argument joins the speaker's name:
+ * `\sjm[sottovoce]{...}` is labelled `Jacques, sottovoce`. It lies inside the
+ * opening fold, so it is hidden with the rest of the command.
  *
  * The text to show is already the text in the source, so it is left alone: only
  * `\sjm{` and the closing brace are folded away behind placeholders. The body
@@ -69,6 +71,7 @@ class DialogueRenderPass(
     private fun LatexCommands.toFolds(definitions: Map<String, DialogueDefinition>): List<Fold> {
         val definition = definitions[name] ?: return emptyList()
         val argument = parameterList.firstOrNull { it.requiredParam != null }?.textRange ?: return emptyList()
+        val optional = parameterList.firstOrNull { it.optionalParam != null }?.text
 
         // The argument range carries its braces: `{` closes the opening fold and
         // `}` is the closing one.
@@ -83,7 +86,7 @@ class DialogueRenderPass(
                 textRange.startOffset,
                 openingEnd,
                 definition.kind.openingQuote,
-                superscript = definition.speaker,
+                superscript = speakerLabel(definition.speaker, optional),
             ),
             Fold(closingStart, argument.endOffset, definition.kind.closingQuote),
         )

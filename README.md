@@ -255,6 +255,11 @@ A `\thought` command gets curly quotes instead of guillemets:
 
 > Jacques: “Non ci credo.”
 
+The optional argument, when there is one, follows the name after a comma:
+`\sjm[sottovoce]{Vieni qui.}` is shown as
+
+> Jacques, sottovoce: «Vieni qui.»
+
 **The sentence stays real text.** Only `\sjm{` and the closing brace are hidden.
 The caret goes into the line, the spellchecker sees it, completion works. What
 is hidden cannot be un-hidden by clicking: to see the command, turn the master
