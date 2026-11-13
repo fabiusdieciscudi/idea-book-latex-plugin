@@ -15,7 +15,7 @@ import name.fabiusdieciscudi.booklatex.BookLatexBundle
 import name.fabiusdieciscudi.booklatex.settings.BookLatexConfigurable
 
 /**
- * The gear beside the master switch: *Settings | Tools | Book LaTeX*, opened on
+ * The gear at the end of the editor's buttons: *Settings | Tools | Book LaTeX*, opened on
  * the plugin's own page rather than wherever the settings were left.
  */
 class OpenSettingsAction : AnAction(
