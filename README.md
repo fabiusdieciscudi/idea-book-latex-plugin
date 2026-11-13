@@ -344,7 +344,10 @@ braces; the text between them is yours to edit.
 wrap it in `\sq`. The selection is checked as for
 [cuts and alternatives](#cuts-and-alternatives).
 
-`\ellipsis` is shown as `…`.
+`\ellipsis` is shown as `…`, and the dashes TeX makes of hyphens are shown as
+such: `--` as an en dash `–`, `---` as an em dash `—`, in the prose and in the
+lines of dialogue alike. Not in a formula, where they are minus signs, nor in
+the options between square brackets.
 
 **Type three dots** and they become `\ellipsis`, which is immediately drawn as a
 single ellipsis character. Pasted text is left alone, and so is anything after a

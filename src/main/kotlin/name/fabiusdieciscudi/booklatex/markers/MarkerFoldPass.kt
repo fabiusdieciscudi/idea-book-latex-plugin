@@ -23,6 +23,9 @@ import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
+import nl.hannahsten.texifyidea.psi.LatexOptionalParam
+import nl.hannahsten.texifyidea.psi.LatexTypes
 
 /**
  * Folds commands away behind short placeholders.
@@ -88,8 +91,27 @@ class MarkerFoldPass(
         val endFolds = PsiTreeUtil.findChildrenOfType(psiFile, LatexEndCommand::class.java)
             .flatMap { end -> end.toListFold() }
 
-        folds = commandFolds + beginFolds + endFolds
+        folds = commandFolds + beginFolds + endFolds + dashFolds()
     }
+
+    /**
+     * `--` and `---`, drawn as the en and em dashes the book will print, the way
+     * `\ellipsis` is drawn as its three dots.
+     *
+     * They are not commands but prose, so they are looked for in the words of the
+     * text: every word, in a paragraph or in a command's argument -- the line of a
+     * `\sjm{...}` too. Not in a formula, where `--` is two minus signs, nor in
+     * the options between square brackets, which are values and not prose.
+     * Comments and verbatim text are other tokens, and never looked at.
+     */
+    private fun dashFolds(): List<Fold> =
+        PsiTreeUtil.collectElements(psiFile) { it.node?.elementType == LatexTypes.NORMAL_TEXT_WORD && '-' in it.text }
+            .filter { PsiTreeUtil.getParentOfType(it, LatexMathEnvironment::class.java) == null }
+            .filter { PsiTreeUtil.getParentOfType(it, LatexOptionalParam::class.java) == null }
+            .flatMap { word ->
+                val start = word.textRange.startOffset
+                dashes(word.text).map { Fold(start + it.start, start + it.end, it.glyph) }
+            }
 
     private fun LatexCommands.toFolds(): List<Fold> {
         MarkerSpecs.forCommand(name)?.let { return toMarkerFold(it) }
